@@ -1926,4 +1926,8 @@
   <java-symbol type="anim" name="recent_screen_fade_out" />
 
   <java-symbol type="bool" name="config_offscreenGestureSupport" />
+
+  <!-- Package Manager -->
+  <java-symbol type="array" name="config_disabledComponents" />
+
 </resources>
