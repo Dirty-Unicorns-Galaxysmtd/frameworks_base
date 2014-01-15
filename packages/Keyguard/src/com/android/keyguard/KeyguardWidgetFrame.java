@@ -120,6 +120,29 @@ public class KeyguardWidgetFrame extends FrameLayout {
         mGradientPaint.setXfermode(sAddBlendMode);
     }
 
+    private boolean widgetsDisabled(Context context) {
+        int disabledFeatures = 0;
+        LockPatternUtils lockPatternUtils = new LockPatternUtils(context);
+        DevicePolicyManager dpm =
+                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        if (dpm != null) {
+            disabledFeatures = getDisabledFeatures(dpm, lockPatternUtils);
+        }
+        boolean disabledByDpm =
+                (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_WIDGETS_ALL) != 0;
+        boolean disabledByUser = !lockPatternUtils.getWidgetsEnabled();
+        return disabledByDpm || disabledByUser;
+    }
+
+    private int getDisabledFeatures(DevicePolicyManager dpm, LockPatternUtils lockPatternUtils) {
+        int disabledFeatures = DevicePolicyManager.KEYGUARD_DISABLE_FEATURES_NONE;
+        if (dpm != null) {
+            final int currentUser = lockPatternUtils.getCurrentUser();
+            disabledFeatures = dpm.getKeyguardDisabledFeatures(null, currentUser);
+        }
+        return disabledFeatures;
+    }
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
