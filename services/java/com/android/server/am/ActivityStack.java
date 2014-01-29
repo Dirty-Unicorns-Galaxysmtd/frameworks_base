@@ -2536,6 +2536,7 @@ final class ActivityStack {
         // activity into the stopped state and then finish it.
         if (localLOGV) Slog.v(TAG, "Enqueueing pending finish: " + r);
         mStackSupervisor.mFinishingActivities.add(r);
+        r.resumeKeyDispatchingLocked();
         mStackSupervisor.getFocusedStack().resumeTopActivityLocked(null);
         return r;
     }
@@ -3170,9 +3171,7 @@ final class ActivityStack {
 
         final TaskRecord task = mResumedActivity != null ? mResumedActivity.task : null;
         if (task == tr && task.mOnTopOfHome || numTasks <= 1) {
-            if (task != null) {
-                task.mOnTopOfHome = false;
-            }
+            tr.mOnTopOfHome = false;
             return mStackSupervisor.resumeHomeActivity(null);
         }
 
