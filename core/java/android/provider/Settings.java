@@ -3137,6 +3137,22 @@ public final class Settings {
          * HALO message box?, should default to 1 (yes, show message box on incoming notification)
          * @hide
          */
+        public static final String WAKELOCK_BLOCKING_ENABLED = "wakelock_blocking_enabled";
+
+        /**
+         * @hide
+         */
+        public static final String WAKELOCK_BLOCKING_LIST = "wakelock_blocking_list";
+
+        /**
+         * Electronic beam animation mode
+         * 0 = off,
+         * 1 = always horizontal,
+         * 2 = always vertical,
+         * 3 = dependent on orientation
+         * 4 = scale animation
+         * @hide
+         */
         public static final String HALO_MSGBOX = "halo_msgbox";
 
         /**
@@ -3418,6 +3434,18 @@ public final class Settings {
 
         /**
          * Volume rocker wake
+         * @hide
+         */
+        public static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
+
+        /**
+         * Settings to backup. This is here so that it's in the same place as the settings
+         * keys and easy to update.
+         *
+         * NOTE: Settings are backed up and restored in the order they appear
+         *       in this array. If you have one setting depending on another,
+         *       make sure that they are ordered appropriately.
+         *
          * @hide
          */
         public static final String APP_SIDEBAR_ITEM_SIZE = "app_sidebar_item_size";
@@ -5223,6 +5251,18 @@ public final class Settings {
 
         /**
          * bluetooth HCI snoop log configuration
+         * Whether the Wimax should be on.  Only the WiMAX service should touch this.
+         * @hide
+         */
+         public static final String WIMAX_ON = "wimax_on";
+
+        /**
+         * This are the settings to be backed up.
+         *
+         * NOTE: Settings are backed up and restored in the order they appear
+         *       in this array. If you have one setting depending on another,
+         *       make sure that they are ordered appropriately.
+         *
          * @hide
          */
         public static final String BLUETOOTH_HCI_LOG =
