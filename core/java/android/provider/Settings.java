@@ -2820,6 +2820,12 @@ public final class Settings {
         public static final String LOCKSCREEN_TARGETS = "lockscreen_targets";
 
         /**
+         * This preference enables showing the power menu on LockScreen.
+         * @hide
+         */
+        public static final String LOCKSCREEN_ENABLE_POWER_MENU = "lockscreen_enable_power_menu";
+
+        /**
          * Whether to display notifications on screen when screen is off
          * @hide
          */
@@ -3990,6 +3996,18 @@ public final class Settings {
         public static final String DISABLE_FC_NOTIFICATIONS = "disable_fc_notifications";
 
         /**
+         * Enable touches in screen recording
+         * @hide
+         */
+        public static final String SREC_ENABLE_TOUCHES = "srec_enable_touches";
+
+        /**
+         * Enable microphone as audio input in screen recording
+         * @hide
+         */
+        public static final String SREC_ENABLE_MIC = "srec_enable_mic";
+
+        /**
          * Custom System Animations
          *
          * @hide
@@ -5141,6 +5159,12 @@ public final class Settings {
          * @hide
          */
         public static final String ADB_NOTIFY = "adb_notify";
+
+        /**
+         * Whether to reboot the device if an unknown ADB host is detected while screen is locked
+         * @hide
+         */
+        public static final String ADB_PARANOID = "adb_paranoid";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the
