@@ -199,18 +199,8 @@ public class UsbDeviceManager {
         boolean massStorageSupported = false;
         final StorageManager storageManager = StorageManager.from(mContext);
         final StorageVolume primary = storageManager.getPrimaryVolume();
-
-        if (Settings.Secure.getInt(mContentResolver, Settings.Secure.USB_MASS_STORAGE_ENABLED, 0 ) == 1 ) {
-                massStorageSupported = primary != null && primary.allowMassStorage();
-        } else {
-                massStorageSupported = false;
-        }
-
-        if ("mtp,adb".equals(SystemProperties.get("persist.sys.usb.config"))) {
-            mUseUsbNotification = true;
-        } else {
-            mUseUsbNotification = !massStorageSupported;
-        }
+        massStorageSupported = primary != null && primary.allowMassStorage();
+        mUseUsbNotification = !massStorageSupported;
 
         // make sure the ADB_ENABLED setting value matches the current state
         Settings.Global.putInt(mContentResolver, Settings.Global.ADB_ENABLED, mAdbEnabled ? 1 : 0);
