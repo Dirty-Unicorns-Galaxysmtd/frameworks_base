@@ -1492,8 +1492,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         UserHandle.USER_CURRENT);
             }
 
-            updateKeyAssignments();
-
             if (mSystemReady) {
                 int pointerLocation = Settings.System.getIntForUser(resolver,
                         Settings.System.POINTER_LOCATION, 0, UserHandle.USER_CURRENT);
