@@ -3452,12 +3452,6 @@ public final class Settings {
         public static final String FORCE_SHOW_OVERFLOW_MENU = "force_show_overflow_menu";
 
         /**
-         * Setting to force show navigation bar.
-         * @hide
-         */
-        public static final String SHOW_NAVIGATION = "show_navigation";
-
-        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
