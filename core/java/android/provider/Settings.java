@@ -2704,6 +2704,12 @@ public final class Settings {
         public static final String STATUS_BAR_TRAFFIC_HIDE = "status_bar_traffic_hide";
 
         /**
+        * ToastAnimation
+        * @hide
+        */
+        public static final String TOAST_ANIMATION = "toast_animation";
+
+        /**
          * Whether to show the network status in the status bar
          * @hide
          */
@@ -4159,6 +4165,26 @@ public final class Settings {
         public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
 
         /**
+         * @hide
+         */
+        public static final String START_SCREEN_STATE_SERVICE = "start_screen_state_service";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_TWOG = "screen_state_twog";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_GPS = "screen_state_gps";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_MOBILE_DATA = "screen_state_mobile_data";
+
+        /**
          * Disable FC Notifications
          * @hide
          */
@@ -4391,6 +4417,12 @@ public final class Settings {
          * @hide
          */
         public static final String CALL_FLIP_ACTION_KEY = "call_flip_action_key";
+
+        /**
+         * Enable statusbar double tap gesture on to put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_TO_SLEEP = "double_tap_to_sleep";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -5338,6 +5370,12 @@ public final class Settings {
          */
         @Deprecated
         public static final String ADB_ENABLED = Global.ADB_ENABLED;
+
+        /**
+         * The hostname for this device
+         * @hide
+         */
+        public static final String DEVICE_HOSTNAME = "device_hostname";
 
         /**
          * The TCP/IP port to run ADB on, or -1 for USB
