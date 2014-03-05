@@ -2710,6 +2710,12 @@ public final class Settings {
         public static final String TOAST_ANIMATION = "toast_animation";
 
         /**
+        * Bold Clock
+        * @hide
+        */
+        public static final String STATUS_BAR_BOLD_CLOCK = "status_bar_bold_clock";
+
+        /**
          * Whether to show the network status in the status bar
          * @hide
          */
@@ -3167,7 +3173,15 @@ public final class Settings {
         public static final String RECENTS_USE_OMNISWITCH = "recents_use_omniswitch";
 
         /**
+         * Config for showing LTE for 4g
+         *
+         * @hide
+         */
+        public static final String SHOW_4G_FOR_LTE = "show_4g_for_lte";
+
+        /**
          * HALO notificatoin count?, should default to 4 (both)
+         *
          * @hide
          */
         public static final String HALO_NOTIFY_COUNT = "halo_notify_count";
