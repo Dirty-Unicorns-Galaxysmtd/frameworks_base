@@ -108,7 +108,6 @@ public class KeyguardViewManager {
     private AudioManager mAudioManager;
 
     private Drawable mCustomBackground = null;
-    private Bitmap mBlurredImage = null;
     private int mBlurRadius = 14;
     private boolean mSeeThrough = false;
 
