@@ -1902,6 +1902,7 @@
 
   <java-symbol type="bool" name="use_motion_accel" />
 
+<<<<<<< HEAD
   <!-- Toast Animation -->
   <java-symbol type="style" name="Animation.Toast.Fade" />
   <java-symbol type="style" name="Animation.Toast.SlideRight" />
@@ -1926,6 +1927,7 @@
   <java-symbol type="anim" name="recent_screen_fade_out" />
 
   <java-symbol type="bool" name="config_offscreenGestureSupport" />
+=======
   <java-symbol type="drawable" name="ic_privacy_guard" />
   <java-symbol type="drawable" name="ic_privacy_guard_off" />
   <java-symbol type="string" name="privacy_guard_dialog_title" />
@@ -1933,4 +1935,5 @@
 
   <!-- SMS RIL_REQUEST_SEND_SMS_EXPECT_MORE -->
   <java-symbol type="bool" name="config_smsUseExpectMore" />
+>>>>>>> 191ed5f... telephony: disable the use of SMS_EXPECT_MORE by default (1/2)
 </resources>
