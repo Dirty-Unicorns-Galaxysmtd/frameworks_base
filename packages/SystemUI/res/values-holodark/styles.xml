@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
- * Copyright 2011, The Android Open Source Project
+ * Copyright 2014, SlimRoms Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient name="status_bar_recents_background"
-        android:startColor="#000"
-        android:endColor="#000"
-        android:angle="@integer/status_bar_recents_bg_gradient_degrees"
-        />
-</shape>
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="RecentBaseStyle"  parent="@*android:style/Theme.Holo">
+        <item name="android:popupMenuStyle">@style/RecentPopupMenu</item>
+    </style>
+
+    <style name="RecentPopupMenu" parent="@*android:style/Widget.Holo.ListPopupWindow" />
+
+</resources>

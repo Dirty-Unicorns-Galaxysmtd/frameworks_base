@@ -3552,6 +3552,11 @@ public final class Settings {
         public static final String EMULATE_HW_MENU_KEY = "emulate_hw_menu_key";
 
         /**
+         * @hide
+         */
+        public static final String RECENTS_PANEL_COLOR = "recents_panel_color";
+
+        /**
          * Force show overflow (3dot) menu for devices that have a hw menu key
          * Can be used for custom button assignment and force soft key use-cases
          * @hide
@@ -3575,14 +3580,6 @@ public final class Settings {
          * @hide
          */
         public static final String APP_SIDEBAR_ITEM_SIZE = "app_sidebar_item_size";
-
-        /**
-         * List of apps to exclude from sidebar
-         * Should Dialer suggest nearby phone numbers
-         *
-         * @hide
-         */
-        public static final String ENABLE_DIALER_SUGGESTIONS = "enable_dialer_suggestions";
 
         /**
          * Should Flip to Silence be used
