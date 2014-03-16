@@ -72,6 +72,8 @@ import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.internal.util.nameless.NamelessActions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -120,6 +122,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
+    private boolean mShowProfiles = true;
     private boolean mIsWaitingForEcmExit = false;
     private boolean mHasTelephony;
     private boolean mHasVibrator;
@@ -235,6 +238,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @return A new dialog.
      */
     private GlobalActionsDialog createDialog() {
+        mShowProfiles = Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.SHOW_PROFILES, true);
         // Simple toggle style if there's no vibrator, otherwise use a tri-state
         if (!mHasVibrator) {
             mSilentModeAction = new SilentModeToggleAction();
@@ -444,7 +449,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // next: profile - only shown if enabled, which is true by default
-        if (Settings.System.getInt(mContext.getContentResolver(), SYSTEM_PROFILES_ENABLED, 1) == 1) {
+        if (Settings.System.getInt(mContext.getContentResolver(), SYSTEM_PROFILES_ENABLED, 1) == 1 && mShowProfiles) {
             mItems.add(
                 new ProfileChooseAction() {
                     public void onPress() {
@@ -463,6 +468,34 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         return false;
                     }
                 });
+        }
+
+        // next: On-The-Go, if enabled
+        boolean showOnTheGo = Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_ONTHEGO_ENABLED, false);
+        if (showOnTheGo) {
+            mItems.add(
+                new SinglePressAction(com.android.internal.R.drawable.ic_lock_onthego,
+                        R.string.global_action_onthego) {
+
+                        public void onPress() {
+                            NamelessActions.processAction(mContext,
+                                    NamelessActions.ACTION_ONTHEGO_TOGGLE);
+                        }
+
+                        public boolean onLongPress() {
+                            return false;
+                        }
+
+                        public boolean showDuringKeyguard() {
+                            return true;
+                        }
+
+                        public boolean showBeforeProvisioning() {
+                            return true;
+                        }
+                    }
+            );
         }
 
         // next: airplane mode
@@ -791,6 +824,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }).create();
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
         dialog.show();
+    }
+
+    private void startOnTheGo() {
+        final ComponentName cn = new ComponentName("com.android.systemui",
+                "com.android.systemui.nameless.onthego.OnTheGoService");
+        final Intent startIntent = new Intent();
+        startIntent.setComponent(cn);
+        startIntent.setAction("start");
+        mContext.startService(startIntent);
     }
 
     private void prepareDialog() {
