@@ -564,10 +564,7 @@ public class ServiceState implements Parcelable {
                 + " EmergOnly=" + mIsEmergencyOnly);
     }
 
-   // BEGIN privacy-modified
-   // was originally private
-   void setNullState(int state) {
-   // END privacy-modified
+    private void setNullState(int state) {
         if (DBG) Rlog.d(LOG_TAG, "[ServiceState] setNullState=" + state);
         mVoiceRegState = state;
         mDataRegState = state;
@@ -804,6 +801,8 @@ public class ServiceState implements Parcelable {
         case ServiceState.RIL_RADIO_TECHNOLOGY_HSPAP:
         case ServiceState.RIL_RADIO_TECHNOLOGY_DCHSPAP:
             return TelephonyManager.NETWORK_TYPE_HSPAP;
+        case ServiceState.RIL_RADIO_TECHNOLOGY_GSM:
+            return TelephonyManager.NETWORK_TYPE_GSM;
         default:
             return TelephonyManager.NETWORK_TYPE_UNKNOWN;
         }

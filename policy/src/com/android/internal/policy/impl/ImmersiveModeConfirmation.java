@@ -178,6 +178,7 @@ public class ImmersiveModeConfirmation {
                         | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
                 ,
                 PixelFormat.TRANSLUCENT);
+        lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SHOW_FOR_ALL_USERS;
         lp.setTitle("ImmersiveModeConfirmation");
         lp.windowAnimations = com.android.internal.R.style.Animation_RecentApplications;
         lp.gravity = Gravity.FILL;
@@ -332,13 +333,18 @@ public class ImmersiveModeConfirmation {
 
         @Override
         public void handleMessage(Message msg) {
-            switch(msg.what) {
-                case SHOW:
-                    handleShow((String)msg.obj);
-                    break;
-                case HIDE:
-                    handleHide();
-                    break;
+            if (Settings.System.getInt(mContext.getContentResolver(),
+                     Settings.System.DISABLE_IMMERSIVE_MESSAGE, 0) != 1) {
+                switch(msg.what) {
+                    case SHOW:
+                        handleShow((String)msg.obj);
+                        break;
+                    case HIDE:
+                        handleHide();
+                        break;
+                }
+            } else {
+                handleHide();
             }
         }
     }

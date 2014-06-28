@@ -61,17 +61,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 
-//////////////////////////////////////////////////
-import android.content.pm.IPackageManager;
-import android.os.ServiceManager;
-import android.os.Process;
-import java.util.Random;
-
-import android.privacy.IPrivacySettingsManager;
-import android.privacy.PrivacySettings;
-import android.privacy.PrivacySettingsManager;
-//////////////////////////////////////////////////
-
 /**
  * The Settings provider contains global system-level device preferences.
  */
@@ -3110,6 +3099,12 @@ public final class Settings {
         public static final String POINTER_SPEED = "pointer_speed";
 
         /**
+         * Screenshot toggle delay
+         * @hide
+         */
+        public static final String SCREENSHOT_TOGGLE_DELAY = "screenshot_toggle_delay";
+
+        /**
          * HALO enabled, should default to 0 (no, HALO is disabled)
          * @hide
          */
@@ -3186,12 +3181,6 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_4G_FOR_LTE = "show_4g_for_lte";
-
-        /**
-         * volume rocker music track control enable/disable
-         * @hide
-         */
-        public static final String VOLUME_MUSIC_CONTROL = "volume_music_control";
 
         /**
          * HALO notificatoin count?, should default to 4 (both)
@@ -3295,6 +3284,12 @@ public final class Settings {
          * @hide
          */
         public static final String EGG_MODE = "egg_mode";
+
+        /**
+         * Display second in the Clock
+         * @hide
+         */
+        public static final String CLOCK_USE_SECOND = "clock_use_second";
 
         /**
          * Display style of the status bar battery information
@@ -3579,6 +3574,26 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_NAVIGATION = "show_navigation";
+
+        /**
+         * Whether to display app circle sidebar
+         * @hide
+         */
+        public static final String ENABLE_APP_CIRCLE_BAR = "enable_app_circle_bar";
+
+        /**
+         * A list of packages to include in app circle bar.
+         * This should be a string of packages separated by |
+         * @hide
+         */
+        public static final String WHITELIST_APP_CIRCLE_BAR = "whitelist_app_circle_bar";
+
+        /**
+         * Animate-flip Quick Settings Panel Tiles on click
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_TILES_FLIP = "quick_settings_tiles_flip";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -4398,6 +4413,12 @@ public final class Settings {
         public static final String DISABLE_FC_NOTIFICATIONS = "disable_fc_notifications";
 
         /**
+         * Disable Immersive Message
+         * @hide
+         */
+        public static final String DISABLE_IMMERSIVE_MESSAGE = "disable_immersive_message";
+
+        /**
          * Enable touches in screen recording
          * @hide
          */
@@ -4408,6 +4429,54 @@ public final class Settings {
          * @hide
          */
         public static final String SREC_ENABLE_MIC = "srec_enable_mic";
+
+        /**
+         * Which applications to disable heads up notifications for
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_BLACKLIST_VALUES = "heads_up_blacklist_values";
+
+        /**
+         * Heads Up Timeout
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_TIMEOUT = "heads_up_timeout";
+
+        /**
+         * Heads Up Fullscreen Timeout
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_FS_TIMEOUT = "heads_up_fs_timeout";
+
+        /**
+         * Heads Up in Floating Window
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_FLOATING_WINDOW = "heads_up_floating_window";
+
+        /**
+         * Heads Up Notifications
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_NOTIFICATION = "heads_up_enabled";
+
+        /**
+         * Which applications to disable heads up notifications for
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_CUSTOM_VALUES = "heads_up_custom_values";
+
+        /**
+         * HALO color, default is 0xff33b5e5 (normal)
+         * @hide
+         */
+        public static final String HALO_COLOR = "halo_color";
 
         /**
          * If On-The-Go should be displayed at the power menu.
@@ -5122,46 +5191,6 @@ public final class Settings {
                 }
             }
 
-
-         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         //BEGIN PRIVACY
-         if(name.equals(ANDROID_ID)){ //normally it should work with sNameValueCache.getString instead of sLockSettings
-  	       initiate();
-  	       try{
-  		       if(pSetMan == null) pSetMan = new PrivacySettingsManager(context, IPrivacySettingsManager.Stub.asInterface(ServiceManager.getService("privacy")));
-  		       if(mPm == null) mPm = IPackageManager.Stub.asInterface(ServiceManager.getService("package"));
-  		       PrivacySettings settings = null;
-  		       final String[] packages = getPackageName();
-  		       if(packages != null && packages.length > 0){
-  			       for(int i = 0; i < packages.length; i++){
-  				       settings = pSetMan.getSettings(packages[i]);
-  				       if(settings != null && settings.getAndroidIdSetting() != PrivacySettings.REAL){
-  					       String output = settings.getAndroidID();
-  					       if(output != null){
-  						       pSetMan.notification(packages[i], 0, settings.getAndroidIdSetting(), PrivacySettings.DATA_ANDROID_ID, output, null);
-  						       return output;
-  					       } else{
-  						       pSetMan.notification(packages[i], 0, settings.getAndroidIdSetting(), PrivacySettings.DATA_ANDROID_ID, "q4a5w896ay21dr46", null);
-  						       return "q4a5w896ay21dr46"; //we can not pull out empty android id, because we get bootlops then
-  					       }
-  				       }
-  				       if(i == packages.length - 1) //package is allowed to get android id
-  					       pSetMan.notification(packages[packages.length - 1], 0, PrivacySettings.REAL, PrivacySettings.DATA_ANDROID_ID, null, null);
-  				       settings = null;
-  			       }
-  		       } else{
-  			       pSetMan.notification(packages[packages.length - 1], 0, PrivacySettings.REAL, PrivacySettings.DATA_ANDROID_ID, null, null);
-  		       }
-  	       }
-  	       catch (Exception e){
-  		       e.printStackTrace();
-  		       Log.e(PRIVACY_TAG,"Got exception in  getString()");
-               }
-         }
-         //END PRIVACY
-         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
             return sNameValueCache.getStringForUser(resolver, name, userHandle);
         }
 
@@ -5477,70 +5506,6 @@ public final class Settings {
                 int userHandle) {
             return putStringForUser(cr, name, Float.toString(value), userHandle);
         }
-
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//BEGIN PRIVACY
-
-		private static final String PRIVACY_TAG = "PM,SecureSettings";
-		private static Context context;
-
-		private static PrivacySettingsManager pSetMan;
-
-		private static boolean privacyMode = false;
-
-		private static IPackageManager mPm;
-
-		//END PRIVACY
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//BEGIN PRIVACY
-
-		/**
-		* {@hide}
-		* @return package names of current process which is using this object or null if something went wrong
-		*/
-		private static String[] getPackageName(){
-			try{
-				if(mPm != null){
-					int uid = Process.myUid();
-					final String[] package_names = mPm.getPackagesForUid(uid);
-					return package_names;
-				}
-				else{
-					mPm = IPackageManager.Stub.asInterface(ServiceManager.getService("package"));
-					int uid = Process.myUid();
-					final String[] package_names = mPm.getPackagesForUid(uid);
-					return package_names;
-				}
-			}
-			catch(Exception e){
-				e.printStackTrace();
-				Log.e(PRIVACY_TAG,"something went wrong with getting package name");
-				return null;
-			}
-		}
-		/**
-		* {@hide}
-		* This method sets up all variables which are needed for privacy mode! It also writes to privacyMode, if everything was successfull or not!
-		* -> privacyMode = true ok! otherwise false!
-		*/
-		private static void initiate(){
-			try{
-				context = null;
-				pSetMan = new PrivacySettingsManager(context, IPrivacySettingsManager.Stub.asInterface(ServiceManager.getService("privacy")));
-				mPm = IPackageManager.Stub.asInterface(ServiceManager.getService("package"));
-				privacyMode = true;
-			}
-			catch(Exception e){
-				e.printStackTrace();
-				Log.e(PRIVACY_TAG, "Something went wrong with initalize variables");
-				privacyMode = false;
-			}
-		}
-		//END PRIVACY
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DEVELOPMENT_SETTINGS_ENABLED}
@@ -6870,6 +6835,24 @@ public final class Settings {
         public static final String DEVELOPER_OPTIONS_ENABLED = "developer_options_enabled";
 
         /**
+         * Default theme to use.  If empty, use holo.
+         * @hide
+         */
+        public static final String DEFAULT_THEME_PACKAGE = "default_theme_package";
+
+        /**
+         * A '|' delimited list of theme components to apply from the default theme on first boot.
+         * Components can be one or more of the "mods_XXXXXXX" found in
+         * {@link ThemesContract$ThemesColumns}.  Leaving this field blank assumes all components
+         * will be applied.
+         *
+         * ex: mods_icons|mods_overlays|mods_homescreen
+         *
+         * @hide
+         */
+        public static final String DEFAULT_THEME_COMPONENTS = "default_theme_components";
+
+        /**
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
@@ -7620,6 +7603,12 @@ public final class Settings {
          * @hide
          */
         public static final String SMS_SHORT_CODE_RULE = "sms_short_code_rule";
+
+       /**
+        * Used to select TCP's default initial receiver window size in segments - defaults to a build config value
+        * @hide
+        */
+       public static final String TCP_DEFAULT_INIT_RWND = "tcp_default_init_rwnd";
 
        /**
         * Used to disable Tethering on a device - defaults to true

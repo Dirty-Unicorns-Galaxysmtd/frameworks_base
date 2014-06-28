@@ -25,6 +25,7 @@ import static com.android.internal.util.slim.QSConstants.TILE_BATTERY;
 import static com.android.internal.util.slim.QSConstants.TILE_BLUETOOTH;
 import static com.android.internal.util.slim.QSConstants.TILE_BRIGHTNESS;
 import static com.android.internal.util.slim.QSConstants.TILE_BUGREPORT;
+import static com.android.internal.util.slim.QSConstants.TILE_COMPASS;
 import static com.android.internal.util.slim.QSConstants.TILE_CUSTOM;
 import static com.android.internal.util.slim.QSConstants.TILE_CUSTOM_KEY;
 import static com.android.internal.util.slim.QSConstants.TILE_DELIMITER;
@@ -53,7 +54,15 @@ import static com.android.internal.util.slim.QSConstants.TILE_REBOOT;
 import static com.android.internal.util.slim.QSConstants.TILE_NETWORKADB;
 import static com.android.internal.util.slim.QSConstants.TILE_GPS;
 import static com.android.internal.util.slim.QSConstants.TILE_FCHARGE;
+import static com.android.internal.util.slim.QSConstants.TILE_ADBLOCKER;
+import static com.android.internal.util.slim.QSConstants.TILE_HALO;
+import static com.android.internal.util.slim.QSConstants.TILE_SCREENSHOT;
+import static com.android.internal.util.slim.QSConstants.TILE_APPCIRCLEBAR;
 import static com.android.internal.util.slim.QSConstants.TILE_ONTHEGO;
+import static com.android.internal.util.slim.QSConstants.TILE_PROFILE;
+import static com.android.internal.util.slim.QSConstants.TILE_NAVBAR;
+import static com.android.internal.util.slim.QSConstants.TILE_HEADSUP;
+import static com.android.internal.util.slim.QSConstants.TILE_CAMERA;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -79,6 +88,7 @@ import com.android.systemui.quicksettings.BatteryTile;
 import com.android.systemui.quicksettings.BluetoothTile;
 import com.android.systemui.quicksettings.BrightnessTile;
 import com.android.systemui.quicksettings.BugReportTile;
+import com.android.systemui.quicksettings.CompassTile;
 import com.android.systemui.quicksettings.CustomTile;
 import com.android.systemui.quicksettings.ExpandedDesktopTile;
 import com.android.systemui.quicksettings.LocationTile;
@@ -106,7 +116,15 @@ import com.android.systemui.quicksettings.WifiAPTile;
 import com.android.systemui.quicksettings.RebootTile;
 import com.android.systemui.quicksettings.GpsTile;
 import com.android.systemui.quicksettings.FastChargeTile;
+import com.android.systemui.quicksettings.AdblockerTile;
+import com.android.systemui.quicksettings.HaloTile;
+import com.android.systemui.quicksettings.ScreenshotTile;
+import com.android.systemui.quicksettings.AppcirclebarTile;
 import com.android.systemui.quicksettings.OnTheGoTile;
+import com.android.systemui.quicksettings.ProfileTile;
+import com.android.systemui.quicksettings.NavBarTile;
+import com.android.systemui.quicksettings.HeadsupTile;
+import com.android.systemui.quicksettings.CameraTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,6 +186,7 @@ public class QuickSettingsController {
         mIMETile = null;
 
         // Filter items not compatible with device
+        boolean cameraSupported = DeviceUtils.deviceSupportsCamera();
         boolean bluetoothSupported = DeviceUtils.deviceSupportsBluetooth();
         boolean mobileDataSupported = DeviceUtils.deviceSupportsMobileData(mContext);
         boolean torchSupported = DeviceUtils.deviceSupportsTorch(mContext);
@@ -198,7 +217,7 @@ public class QuickSettingsController {
         for (String tile : tiles.split("\\|")) {
             QuickSettingsTile qs = null;
             if (tile.equals(TILE_USER)) {
-                qs = new UserTile(mContext, this);
+                qs = new UserTile(mContext, this, mHandler);
             } else if (tile.equals(TILE_BATTERY)) {
                 qs = new BatteryTile(mContext, this, mStatusBarService.mBatteryController);
             } else if (tile.equals(TILE_SETTINGS)) {
@@ -254,10 +273,28 @@ public class QuickSettingsController {
                 qs = new GpsTile(mContext, this);
             } else if (tile.contains(TILE_FCHARGE)) {
                 qs = new FastChargeTile(mContext, this);
+            } else if (tile.contains(TILE_ADBLOCKER)) {
+                qs = new AdblockerTile(mContext, this);
+            } else if (tile.equals(TILE_HALO)) {
+                qs = new HaloTile(mContext, this);
+            } else if (tile.equals(TILE_SCREENSHOT)) {
+                qs = new ScreenshotTile(mContext, this, mHandler);
+            } else if (tile.equals(TILE_APPCIRCLEBAR)) {
+                qs = new AppcirclebarTile(mContext, this);
             } else if (tile.contains(TILE_ONTHEGO)) {
                 qs = new OnTheGoTile(mContext, this);
             } else if (tile.equals(TILE_THEME)) {
                 qs = new ThemeTile(mContext, this);
+            } else if (tile.equals(TILE_PROFILE)) {
+                qs = new ProfileTile(mContext, this);
+            } else if (tile.equals(TILE_COMPASS)) {
+                qs = new CompassTile(mContext, this);
+            } else if (tile.equals(TILE_NAVBAR)) {
+                qs = new NavBarTile(mContext, this);
+            } else if (tile.equals(TILE_HEADSUP)) {
+                qs = new HeadsupTile(mContext, this);
+            } else if (tile.equals(TILE_CAMERA) && cameraSupported) {
+                qs = new CameraTile(mContext, this, mHandler);
             }
 
             if (qs != null) {

@@ -497,8 +497,10 @@ public class KeyguardHostView extends KeyguardViewBase {
     }
 
     private boolean cameraDisabledByDpm() {
-        return mCameraDisabled
-                || (mDisabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_CAMERA) != 0;
+        boolean disabledSecureKeyguard =
+                (mDisabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_CAMERA) != 0
+                && mLockPatternUtils.isSecure();
+        return mCameraDisabled || disabledSecureKeyguard;
     }
 
     private void updateSecurityViews() {
@@ -1736,6 +1738,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             KeyguardWidgetFrame frame = mAppWidgetContainer.getWidgetPageAt(i);
             frame.removeAllViews();
         }
+        mSecurityViewContainer.onPause(); // clean up any actions in progress
     }
 
     /**

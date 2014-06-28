@@ -178,7 +178,7 @@ bool isValidResourceType(const String8& type)
         || type == "color" || type == "menu" || type == "mipmap";
 }
 
-static sp<AaptFile> getResourceFile(const sp<AaptAssets>& assets, bool makeIfNecessary=true)
+sp<AaptFile> getResourceFile(const sp<AaptAssets>& assets, bool makeIfNecessary)
 {
     sp<AaptGroup> group = assets->getFiles().valueFor(String8("resources.arsc"));
     sp<AaptFile> file;
@@ -698,9 +698,11 @@ bool addTagAttribute(const sp<XMLNode>& node, const char* ns8,
             return false;
         }
 
+#ifdef SHOW_MANIFEST_WARNING
         fprintf(stderr, "Warning: AndroidManifest.xml already defines %s (in %s);"
                         " using existing value in manifest.\n",
                 String8(attr).string(), String8(ns).string());
+#endif
 
         // don't stop the build.
         return true;

@@ -53,6 +53,7 @@
 #include "BootAnimation.h"
 
 #define USER_BOOTANIMATION_FILE "/data/local/bootanimation.zip"
+#define THEME_BOOTANIMATION_FILE "/data/system/theme/bootanimation.zip"
 #define SYSTEM_BOOTANIMATION_FILE "/system/media/bootanimation.zip"
 #define SYSTEM_ENCRYPTED_BOOTANIMATION_FILE "/system/media/bootanimation-encrypted.zip"
 #define EXIT_PROP_NAME "service.bootanim.exit"
@@ -288,6 +289,9 @@ status_t BootAnimation::readyToRun() {
             ((access(USER_BOOTANIMATION_FILE, R_OK) == 0) &&
             (mZip.open(USER_BOOTANIMATION_FILE) == NO_ERROR)) ||
 
+            ((access(THEME_BOOTANIMATION_FILE, R_OK) == 0) &&
+            (mZip.open(THEME_BOOTANIMATION_FILE) == NO_ERROR)) ||
+
             ((access(SYSTEM_BOOTANIMATION_FILE, R_OK) == 0) &&
             (mZip.open(SYSTEM_BOOTANIMATION_FILE) == NO_ERROR))) {
         mAndroidAnimation = false;
@@ -302,6 +306,8 @@ status_t BootAnimation::readyToRun() {
         fd = fopen(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE, "r");
     else if (access(USER_BOOTANIMATION_FILE, R_OK) == 0)
         fd = fopen(USER_BOOTANIMATION_FILE, "r");
+    else if (access(THEME_BOOTANIMATION_FILE, R_OK) == 0)
+        fd = fopen(THEME_BOOTANIMATION_FILE, "r");
     else if (access(SYSTEM_BOOTANIMATION_FILE, R_OK) == 0)
         fd = fopen(SYSTEM_BOOTANIMATION_FILE, "r");
     else
@@ -616,7 +622,16 @@ bool BootAnimation::movie()
                     glDeleteTextures(1, &frame.tid);
             }
 
-            usleep(part.pause * ns2us(frameDuration));
+            // part.pause is the number of frames to pause for so total sleep will be
+            // part.pause * frameDuration.  Instead of a single sleep call, sleep for
+            // frameDuration and then check if surface flinger is done.
+            const nsecs_t frameDurationUs = ns2us(frameDuration);
+            for (int k = 0; k < part.pause; k++) {
+                usleep(frameDurationUs);
+                checkExit();
+                if(exitPending())
+                    break;
+            }
 
             // For infinite parts, we've now played them at least once, so perhaps exit
             if(exitPending() && !part.count)

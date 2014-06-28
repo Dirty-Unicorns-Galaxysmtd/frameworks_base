@@ -44,6 +44,8 @@
 #include <dirent.h>
 #include <assert.h>
 
+#undef ALOGD
+#define ALOGD(...) {}
 
 using namespace android;
 
@@ -751,13 +753,6 @@ int AndroidRuntime::startVm(JavaVM** pJavaVM, JNIEnv** pEnv)
         opt.optionString = regionOption;
         mOptions.add(opt);
     }
-
-    /*
-     * We don't have /tmp on the device, but we often have an SD card.  Apps
-     * shouldn't use this, but some test suites might want to exercise it.
-     */
-    opt.optionString = "-Djava.io.tmpdir=/sdcard";
-    mOptions.add(opt);
 
     initArgs.version = JNI_VERSION_1_4;
     initArgs.options = mOptions.editArray();

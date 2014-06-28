@@ -625,9 +625,9 @@
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_processOutgoingCalls">reroute outgoing calls</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
-    <string name="permdesc_processOutgoingCalls">Allows the app to process
-      outgoing calls and change the number to be dialed. This permission allows
-      the app to monitor, redirect, or prevent outgoing calls.</string>
+    <string name="permdesc_processOutgoingCalls">Allows the app to see the
+        number being dialed during an outgoing call with the option to redirect
+        the call to a different number or abort the call altogether.</string>
 
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_receiveSms">receive text messages (SMS)</string>
@@ -932,13 +932,13 @@
     <!-- [CHAR LIMIT=NONE] Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_getAppOpsStats">Allows the app to retrieve
         collected application operation statistics. Not for use by normal apps.</string>
-    
+
     <!-- [CHAR LIMIT=NONE] Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_updateAppOpsStats">modify app ops statistics</string>
     <!-- [CHAR LIMIT=NONE] Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_updateAppOpsStats">Allows the app to modify
         collected application operation statistics. Not for use by normal apps.</string>
-    
+
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_backup">control system backup and restore</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
@@ -2247,6 +2247,10 @@
     <!-- Other SIP address type. Same context as Other phone type. -->
     <string name="sipAddressTypeOther">Other</string>
 
+    <!-- Error message that is displayed when the user clicks on a quick contacts badge, but
+         there is no contacts application installed that can display the quick contact -->
+    <string name="quick_contacts_not_available">No application found to view this contact.</string>
+
     <!-- Instructions telling the user to enter their SIM PIN to unlock the keyguard.
          Displayed in one line in a large font.  -->
     <string name="keyguard_password_enter_pin_code">Type PIN code</string>
@@ -3259,7 +3263,8 @@
     <!-- [CHAR LIMIT=NONE] Message shown in upgrading dialog for each .apk that is optimized. -->
     <string name="android_upgrading_apk">Optimizing app
         <xliff:g id="number" example="123">%1$d</xliff:g> of
-        <xliff:g id="number" example="123">%2$d</xliff:g>.</string>
+        <xliff:g id="number" example="123">%2$d</xliff:g>.
+        <xliff:g id="app_name">%3$s</xliff:g></string>
 
     <!-- [CHAR LIMIT=NONE] Message to show in upgrading dialog when reached the point of starting apps. -->
     <string name="android_upgrading_starting_apps">Starting apps.</string>
@@ -4523,5 +4528,20 @@
 
     <!-- In WiFi AP notification -->
     <string name="notify_turn_wifi_ap_off_title">Turn Wi-Fi AP off</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want the application to do this. -->
+    <string name="permlab_setKeyguardWallpaper">set keyguard wallpaper</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_setKeyguardWallpaper">Allows an app to change the lock screen wallpaper.</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_readThemes">read your theme info</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_readThemesDesc">Allows the app to read your themes and determine which theme you have applied.</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_writeThemes">modify your themes</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_writeThemesDesc">Allows the app to insert new themes and modify which theme you have applied.</string>
 
 </resources>

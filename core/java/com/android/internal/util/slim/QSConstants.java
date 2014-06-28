@@ -48,7 +48,16 @@ public class QSConstants {
         public static final String TILE_GPS = "toggleGps";
         public static final String TILE_FCHARGE = "toggleFastCharge";
         public static final String TILE_THEME = "toggleTheme";
+        public static final String TILE_ADBLOCKER = "toggleAdblocker";
+        public static final String TILE_HALO = "toggleHalo";
+        public static final String TILE_SCREENSHOT = "toggleScreenshot";
+        public static final String TILE_APPCIRCLEBAR = "toggleAppcirclebar";
         public static final String TILE_ONTHEGO = "toggleOnTheGo";
+        public static final String TILE_PROFILE = "toggleProfile";
+        public static final String TILE_COMPASS = "toggleCompass";
+        public static final String TILE_NAVBAR = "toggleNavbar";
+        public static final String TILE_HEADSUP = "toggleHeadsup";
+        public static final String TILE_CAMERA = "toggleCamera";
 
         // dynamic tiles
         public static final String TILE_ALARM = "toggleAlarm";

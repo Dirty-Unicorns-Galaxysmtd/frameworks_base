@@ -246,6 +246,14 @@ public class BatteryCircleMeterView extends ImageView {
             padLevel = 100;
         }
 
+        if (mLevel > 14) {
+          if (mIsCharging) {
+            usePaint.setColor(mCircleTextChargingColor);
+          } else {
+            usePaint.setColor(mCircleColor);
+          }
+        }
+
         // draw thin gray ring first
         canvas.drawArc(drawRect, 270, 360, false, mPaintGray);
         // draw colored arc representing charge level
@@ -255,8 +263,8 @@ public class BatteryCircleMeterView extends ImageView {
         if (level < 100 && mPercentage) {
             if (level <= 14) {
                 mPaintFont.setColor(mPaintRed.getColor());
-            } else if (mIsCharging) {
-                mPaintFont.setColor(mCircleTextChargingColor);
+            } else if (mIsCharging && (level > 89)) {
+                mPaintFont.setColor(Color.GREEN);
             } else {
                 if (mCustomColor) {
                     mPaintFont.setColor(systemColor);
@@ -291,7 +299,7 @@ public class BatteryCircleMeterView extends ImageView {
         ContentResolver resolver = mContext.getContentResolver();
 
         mBatteryStyle = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_BATTERY, 0, UserHandle.USER_CURRENT);
+                Settings.System.STATUS_BAR_BATTERY, 3, UserHandle.USER_CURRENT);
 
         mCircleColor = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_BATTERY_COLOR, -2, UserHandle.USER_CURRENT);

@@ -20,6 +20,7 @@ package com.android.systemui.slimrecent;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
+import android.app.INotificationManager;
 import android.app.TaskStackBuilder;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -34,6 +35,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Process;
+import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
@@ -45,6 +47,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.android.cards.internal.Card;
 import com.android.cards.internal.CardArrayAdapter;
@@ -77,8 +80,9 @@ public class RecentPanelView {
     public static final int EXPANDED_STATE_BY_SYSTEM = 4;
 
     private static final int MENU_APP_DETAILS_ID   = 0;
-    private static final int MENU_APP_PLAYSTORE_ID = 1;
-    private static final int MENU_APP_AMAZON_ID    = 2;
+    private static final int MENU_APP_FLOATING_ID  = 1;
+    private static final int MENU_APP_PLAYSTORE_ID = 2;
+    private static final int MENU_APP_AMAZON_ID    = 3;
 
     private static final String PLAYSTORE_REFERENCE = "com.android.vending";
     private static final String AMAZON_REFERENCE    = "com.amazon.venezia";
@@ -91,6 +95,7 @@ public class RecentPanelView {
     private final ImageView mEmptyRecentView;
 
     private final RecentController mController;
+    private INotificationManager mNotificationManager;
 
     // Our array adapter holding all cards
     private CardArrayAdapter mCardArrayAdapter;
@@ -176,7 +181,7 @@ public class RecentPanelView {
             public boolean onLongClick(Card card, View view) {
                 constructMenu(
                         (ImageButton) view.findViewById(R.id.card_header_button_expand),
-                        td.packageName);
+                        td);
                 return true;
             }
         });
@@ -212,7 +217,7 @@ public class RecentPanelView {
     /**
      * Construct popup menu for longpress.
      */
-    private void constructMenu(final View selectedView, final String packageName) {
+    private void constructMenu(final View selectedView, final TaskDescription td) {
         if (selectedView == null) {
             return;
         }
@@ -223,15 +228,25 @@ public class RecentPanelView {
         mPopup = popup;
         final Resources res = mContext.getResources();
 
+        // initialize if null
+        if (mNotificationManager == null) {
+            mNotificationManager = INotificationManager.Stub.asInterface(
+                    ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+        }
+
         // Add app detail menu entry.
         popup.getMenu().add(0, MENU_APP_DETAILS_ID, 0,
                 res.getString(R.string.status_bar_recent_inspect_item_title));
 
+        // Add floating mode menu entry
+        popup.getMenu().add(0, MENU_APP_FLOATING_ID, 0,
+                mContext.getResources().getString(R.string.status_bar_recent_floating_item_title));
+
         // Add playstore or amazon entry if it is provided by the application.
-        if (checkAppInstaller(packageName, PLAYSTORE_REFERENCE)) {
+        if (checkAppInstaller(td.packageName, PLAYSTORE_REFERENCE)) {
             popup.getMenu().add(0, MENU_APP_PLAYSTORE_ID, 0,
                     res.getString(R.string.status_bar_recent_playstore_item_title));
-        } else if (checkAppInstaller(packageName, AMAZON_REFERENCE)) {
+        } else if (checkAppInstaller(td.packageName, AMAZON_REFERENCE)) {
             popup.getMenu().add(0, MENU_APP_AMAZON_ID, 0,
                     res.getString(R.string.status_bar_recent_amazon_item_title));
         }
@@ -240,13 +255,23 @@ public class RecentPanelView {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == MENU_APP_DETAILS_ID) {
-                    startApplicationDetailsActivity(packageName, null, null);
+                    startApplicationDetailsActivity(td.packageName, null, null);
+                } else if (item.getItemId() == MENU_APP_FLOATING_ID) {
+                    selectedView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = td.intent;
+                            intent.setFlags(Intent.FLAG_FLOATING_WINDOW
+                                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(intent);
+                        }
+                    });
                 } else if (item.getItemId() == MENU_APP_PLAYSTORE_ID) {
                     startApplicationDetailsActivity(null,
-                            PLAYSTORE_APP_URI_QUERY + packageName, PLAYSTORE_REFERENCE);
+                            PLAYSTORE_APP_URI_QUERY + td.packageName, PLAYSTORE_REFERENCE);
                 } else if (item.getItemId() == MENU_APP_AMAZON_ID) {
                     startApplicationDetailsActivity(null,
-                            AMAZON_APP_URI_QUERY + packageName, AMAZON_REFERENCE);
+                            AMAZON_APP_URI_QUERY + td.packageName, AMAZON_REFERENCE);
                 }
                 return true;
             }
@@ -340,6 +365,7 @@ public class RecentPanelView {
         // Clear all relevant values.
         mTasks.clear();
         mCards.clear();
+        mCardArrayAdapter.notifyDataSetChanged();
         mTasksSize = 0;
         return true;
     }
@@ -499,6 +525,7 @@ public class RecentPanelView {
         int firstItems = 0;
         final int firstExpandedItems =
                 mContext.getResources().getInteger(R.integer.expanded_items_default);
+        boolean loadOneExcluded = true;
         // Get current task list. We do not need to do it in background. We only load MAX_TASKS.
         for (int i = 0, index = 0; i < numTasks && (index < MAX_TASKS); ++i) {
             if (mCancelledByUser) {
@@ -514,14 +541,17 @@ public class RecentPanelView {
 
             // Never load the current home activity.
             if (isCurrentHomeActivity(intent.getComponent(), homeInfo)) {
+                loadOneExcluded = false;
                 continue;
             }
 
             // Don't load excluded activities.
-            if ((recentInfo.baseIntent.getFlags()
+            if (!loadOneExcluded && (recentInfo.baseIntent.getFlags()
                     & Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) != 0) {
                 continue;
             }
+
+            loadOneExcluded = false;
 
             TaskDescription item = createTaskDescription(recentInfo.id,
                     recentInfo.persistentId, recentInfo.baseIntent,
