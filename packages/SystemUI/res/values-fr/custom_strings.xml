@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The OmniROM Project
+<!-- Copyright (C) 2014 The Dirty Unicorns Project
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,16 +16,306 @@
 
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Quick Settings Wi-Fi Back Tile Tethering label -->
     <string name="quick_settings_wifi_tethering_label">Partage de connexion</string>
+
+    <!-- Quick Settings Bluetooth Not Discoverable label -->
     <string name="quick_settings_bluetooth_not_discoverable_label">Invisible</string>
+
+    <!-- Quick Settings Bluetooth Discoverable label -->
     <string name="quick_settings_bluetooth_discoverable_label">Visible</string>
+
+    <!-- Quick Settings Bluetooth Not Connected -->
     <string name="quick_settings_bluetooth_disabled">Désactivé</string>
+
+    <!-- Quick Settings Bluetooth Number of Paired Devices -->
     <string name="quick_settings_bluetooth_number_paired"><xliff:g id="number">%d</xliff:g> appareils appairés</string>
+
+    <!-- Screenrecord Notification Ticker -->
     <string name="screenrecord_notif_ticker">L\'écran est en cours d\'enregistrement</string>
-    <string name="screenrecord_notif_title">Enregistrement de l\écran</string>
+
+    <!-- Screenrecord notification title -->
+    <string name="screenrecord_notif_title">Enregistrement de l\'écran</string>
+
+    <!-- Screenrecord notification action: Stop -->
     <string name="screenrecord_notif_stop">Arrêter</string>
-    <string name="screenrecord_notif_pointer">Affichage du pointeur</string>
+
+    <!-- Screenrecord notification action: Toggle pointer -->
+    <string name="screenrecord_notif_pointer">Afficher le pointeur</string>
+
+    <!-- Screen record notification error title -->
     <string name="screenrecord_notif_error">Impossible d\'enregistrer l\'écran</string>
-    <string name="quick_settings_battery_charging">Chargement</string>
+    <string name="screenshot_delete_confirmation">Capture d\'écran supprimée</string>
+
+    <!-- Development shortcut -->
+    <string name="advanced_dev_option_wipe_app">Supprimer les données de l\'application</string>
+    <string name="advanced_dev_option_force_stop">Forcer l\'arrêt</string>
+
+    <!-- QS Battery Tile -->
+    <string name="quick_settings_battery_charging">En charge</string>
     <string name="quick_settings_battery_discharging">Déchargement</string>
+
+    <!-- Camera Tile -->
+    <string name="quick_settings_camera_label">Appareil photo</string>
+    <string name="quick_settings_camera_error_connect">Impossible de se connecter à l\'appareil photo</string>
+
+    <!-- Dialog title for navigation bar button selection -->
+    <string name="navbar_dialog_title">Choisir une action</string>
+    <string name="navbar_home_button">Bouton Accueil</string>
+    <string name="navbar_recent_button">Bouton Applications Récentes</string>
+    <string name="navbar_search_button">Bouton Recherche</string>
+    <string name="navbar_back_button">Bouton Retour</string>
+    <string name="navbar_empty_button">Bouton vide</string>
+    <string name="navbar_menu_conditional_button">Bouton Menu (masqué automatiquement)</string>
+    <string name="navbar_menu_always_button">Bouton Menu (toujours affiché)</string>
+    <string name="navbar_menu_big_button">Bouton Menu</string>
+
+    <!-- Content description of the halo button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_halo">Crée une notification Halo.</string>
+
+    <!-- LET THERE BE HALO!! -->
+    <string name="halo_dismiss">Effacer la notification</string>
+    <string name="halo_hide">Masquer</string>
+    <string name="halo_clear_all">Effacer toutes les notifications</string>
+    <string name="halo_silence">Masquer &amp; silence jusqu\'au réveille</string>
+    <string name="halo_tutorial1">Voici HALO</string>
+    <string name="halo_tutorial2">Pour me déplacer\u00A0: double appuy &amp; glisser</string>
+    <string name="halo_tutorial3">Parcourir\u00A0: glisser horizontalement</string>
+    <string name="halo_battery_plugged">EN CHARGE</string>
+    <string name="halo_battery_unplugged">RESTANT</string>
+    <string name="halo_battery_full">COMPLET</string>
+    <string name="halo_aeroplane1">AVION</string>
+    <string name="halo_aeroplane2">MODE</string>
+    <string name="halo_wifi_on">WI-FI ACTIVÉ</string>
+    <string name="halo_wifi_off">WI-FI DÉSACTIVÉ</string>
+    <string name="halo_signal_bars_4">COMPLET</string>
+    <string name="halo_signal_bars_3">TROIS BARRES</string>
+    <string name="halo_signal_bars_2">DEUX BARRES</string>
+    <string name="halo_signal_bars_1">UNE BARRE</string>
+    <string name="halo_signal_bars_none">AUCUNE BARRE</string>
+    <string name="wifi_ap_disabled">WiFi AP DÉSACTIVÉ</string>
+    <string name="wifi_ap_enabled">WiFi AP ACTIVÉ</string>
+
+    <!-- QuickSettings: Immersive mode [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_immersive_mode_label">Mode Immersif</string>
+    <!-- QuickSettings: Immersive mode (Off) [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_immersive_mode_off_label">Mode Immersif désactivé</string>
+
+    <!-- Recents Ram Bar -->
+    <string name="memory">RAM</string>
+    <!-- [CHAR LIMIT=10] Running services, summary of background processes -->
+    <string name="service_free_mem"><xliff:g id="memory">%1$s</xliff:g> free</string>
+    <!-- [CHAR LIMIT=10] Running services, summary of foreground processes -->
+    <string name="service_used_mem"><xliff:g id="memory">%1$s</xliff:g> utilisé</string>
+
+    <!-- App sidebar -->
+    <string name="default_folder_text">Dossier</string>
+    <string name="title_activity_sidebar_configuration">Applications de la Barre</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="toast_items_saved">Applications de la Barre d\'Applications enregistrées.</string>
+    <string name="content_setup_instructions">Pour ajouter des applications dans la Barre d\'Applications, effectuer un appui long sur n\'importe quelle application à droite et la glisser/déposer sur la Barre d\'Applications.\n\nPour créer un dossier, placer des applications sur une application déjà présente dans la Barre d\'Applications.\n\nPour supprimer une application, faire glisser l\'application en dehors de la Barre d\'Applications.</string>
+    <string name="content_setup_dismiss">Continuer</string>
+
+    <!-- Off/On/Toggle -->
+    <string name="off">Désactivé</string>
+    <string name="on">Activé</string>
+    <string name="toggle">Tuile</string>
+
+    <!-- Quick Settings -->
+    <string name="quick_settings_gps">GPS</string>
+    <string name="quick_settings_gps_off">GPS désactivé</string>
+    <string name="quick_settings_screen_sleep">Mettre en veille</string>
+    <string name="quick_settings_ringer_on">Son activé</string>
+    <string name="quick_settings_ringer_off">Son désactivé</string>
+    <string name="quick_settings_vibration_on">Vibreur activé</string>
+    <string name="quick_settings_vibration_off">Vibreur désactivé</string>
+    <string name="quick_settings_label_enabled">Activé</string>
+    <string name="quick_settings_label_disabled">Désactivé</string>
+    <string name="quick_settings_ringer_normal">Son</string>
+    <string name="quick_settings_lockscreen">Écran de verrouillage</string>
+    <string name="quick_settings_network_type">Mode réseau</string>
+    <string name="quick_settings_report_bug">Signaler un bogue</string>
+    <string name="quick_settings_sync">Synchronisation</string>
+    <string name="quick_settings_sync_off">Synchronisation désactivée</string>
+    <string name="quick_settings_torch">Lampe Torche</string>
+    <string name="quick_settings_torch_off">Lampe Torche désactivée</string>
+    <string name="quick_settings_nfc">NFC</string>
+    <string name="quick_settings_nfc_off">NFC désactivé</string>
+    <string name="quick_settings_screen_timeout">Délai avant mise en veille</string>
+    <string name="quick_settings_screen_timeout_summary_never">Jamais</string>
+    <string name="quick_settings_usb_tether_off_label">Déconnecté</string>
+    <string name="quick_settings_usb_tether_connected_label">Partage de connexion USB désactivé</string>
+    <string name="quick_settings_usb_tether_on_label">Partage de connexion USB activé</string>
+    <string name="quick_settings_wifiap">Partage de connexion Wi-Fi</string>
+    <string name="quick_settings_wifiap_off">Partage de connexion Wi-Fi désactivé</string>
+    <string name="quick_settings_quiethours">Heures silencieuse activée</string>
+    <string name="quick_settings_quiethours_off">Heures silencieuse désactivée</string>
+    <string name="quick_settings_lte">4G</string>
+    <string name="quick_settings_lte_off">4G désactivée</string>
+    <string name="quick_settings_volume">Volume</string>
+    <string name="quick_settings_expanded_desktop">Étendues</string>
+    <string name="quick_settings_expanded_desktop_off">Normale</string>
+    <string name="quick_settings_music_play">Lecture</string>
+    <string name="quick_settings_music_pause">Pause</string>
+    <string name="quick_settings_reboot_recovery">Recovery</string>
+    <string name="quick_settings_reboot">Redémarrage</string>
+    <string name="quick_settings_custom_toggle">Personnalisé</string>
+    <string name="quick_settings_quick_record_nofile">Appui long</string>
+    <string name="quick_settings_quick_record_def">Enregistrement Rapide</string>
+    <string name="quick_settings_quick_record_rec">Enregistrement...</string>
+    <string name="quick_settings_quick_record_save">Sauvegardé</string>
+    <string name="quick_settings_quick_record_play">Lecture...</string>
+
+    <!-- QuickSettings: Fast Charge -->
+    <string name="quick_settings_fcharge_on_label">Charge rapide</string>
+    <string name="quick_settings_fcharge_off_label">Désactivée</string>
+
+    <!-- QuickSettings: TRDS Switch -->
+    <string name="quick_settings_theme_switch_dark">Thème sombre</string>
+    <string name="quick_settings_theme_switch_light">Thème clair</string>
+
+    <!-- Title shown in recents popup for locking an app from being cleared -->
+    <string name="status_bar_recent_lock_item_title">Verrouiller</string>
+    <!-- Title shown in recents popup for unlocking an app from being cleared -->
+    <string name="status_bar_recent_unlock_item_title">Déverrouiller</string>
+
+    <!-- Hide Them Shitz -->
+    <string name="status_bar_notification_hide_icon_packages">Masquer l\'icône de notification</string>
+
+    <!-- On The Go -->
+    <string name="onthego_notif_ticker">On-The-Go activé</string>
+    <string name="onthego_notif_title">On-The-Go est activé</string>
+    <string name="onthego_notif_stop">Arrêt</string>
+    <string name="onthego_notif_options">Options</string>
+    <string name="onthego_notif_error">Impossible de démarrer On-The-Go</string>
+    <string name="onthego_notif_restart">Redémarrer On-The-Go</string>
+    <string name="onthego_notif_camera_changed">Mode Appareil photo modifié</string>
+    <string name="onthego_transparency">Transparence</string>
+    <string name="onthego_front_camera">Utilisation de la caméra frontale</string>
+    <string name="onthego_service_toggle">Redémarrer automatiquement le service</string>
+
+    <!-- Dialog Cancel/OK -->
+    <string name="cancel">Annuler</string>
+    <string name="dlg_ok">OK</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+
+    <!-- Chamber of secrets -->
+    <string name="shortcut_picker">Raccourcis de la Chambre</string>
+    <string name="shortcut_chamber">Chambre des Secrets</string>
+    <string name="chamber_disabled">Chambre des secrets fermée</string>
+    <string name="chamber_title">Configuration des entrées</string>
+    <string name="chamber_message">Saisir une chaîne de paramètres qui est soit une fonction de marche soit une fonction d\'arrêt (case à cocher) ou une liste de choix. Par exemple, quiet_hours_ringer ou un équivalent. Les réglages disponibles peuvent être trouvés dans le fichier de Settings.java. AVERTISSEMENT\u00A0: Ce processus est dangereux\u00A0!</string>
+    <string name="chamber_invalid">Chaîne de paramètres incorrecte. Faites attention.</string>
+    <string name="chamber_invalid_setting">Essayer de basculer ce paramètre manuellement pour s\'assurer que les paramètres pour cette action existent dans la base de données.</string>
+    <string name="chamber_checkbox">Case à cocher</string>
+    <string name="chamber_chk_message">Est-ce un paramètre de case à cocher\u00A0?</string>
+    <string name="chamber_int">Chaîne de paramètres</string>
+    <string name="chamber_int_message">Saisir la chaîne de paramètres désirée pour le basculement. Séparer chaque chaîne de paramètres par une virgule. Les paramètres de couleurs acceptent les valeurs hexadécimales telles que #FF00aacc ou les valeurs de couleurs de base comme le rouge, vert et jaune.</string>
+
+    <!-- Title shown in recents popup for showing app in floating mode -->
+    <string name="status_bar_recent_floating_item_title">Mode fenêtres flottantes</string>
+
+    <!-- Title shown in notification popup for launching notification in floating mode -->
+    <string name="status_bar_notification_floating_item_title">Mode fenêtres flottantes</string>
+
+    <!-- Spam -->
+    <string name="status_bar_notification_spam_item_title">Bloqueur de notification</string>
+
+    <!-- App circle sidebar -->
+    <string name="app_float_maximize_item_title">Agrandir</string>
+    <string name="app_float_item_title">Fenêtre flottante</string>
+    <string name="app_stop_item_title">Arrêter l\'application</string>
+
+    <!-- Title shown in notification popup for launching notification in floating mode -->
+    <string name="status_bar_notification_floating_item_title">Mode fenêtres flottantes</string>
+
+    <!-- Title shown in recents popup for showing app in floating mode -->
+    <string name="status_bar_recent_floating_item_title">Mode fenêtres flottantes</string>
+
+    <string name="quick_settings_compass_off">Boussole désactivée</string>
+    <string name="quick_settings_compass_init">Initialisation\u2026</string>
+
+    <!-- CPUFreq -->
+    <string name="cpufreq_max">Fréquence CPU Maximale</string>
+    <string name="cpufreq_min">Fréquence CPU Minimale</string>
+
+    <string name="accessibility_dpad_left">Curseur gauche</string>
+    <string name="accessibility_dpad_right">Curseur droit</string>
+
+    <!--Show plug type for battery tile -->
+    <string name="power_ac"> (Chargeur)</string>
+    <string name="power_usb"> (USB)</string>
+    <string name="power_wireless"> (Sans fils)</string>
+    <string name="power_ac_usb"> (Chargeur+USB)</string>
+
+    <!-- PIE -->
+    <string name="pie_date_format">ccc, dd MMM yyyy</string>
+    <string name="pie_hour_format_12">hh:mm</string>
+    <string name="pie_hour_format_24">HH:mm</string>
+    <string name="pie_am_pm">a</string>
+
+    <!-- Lock and Add buttons -->
+    <string name="accessibility_lock_button">Ajouter le bouton Marche/Arrêt</string>
+    <string name="accessibility_add_button">Ajouter le bouton du Volet des paramètres</string>
+
+    <!-- Dirty Tweaks -->
+    <string name="quick_settings_dirtytweaks">Dirty Tweaks</string>
+
+    <!-- Content description of the phone signal when it is four bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_phone_four_bars">Signal : très bon</string>
+    <!-- Content description of the phone signal when it is five bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_phone_five_bars">Signal : très très bon</string>
+
+    <!-- Content description of the data signal when it is four bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_data_four_bars">Signal très bon</string>
+    <!-- Content description of the data signal when it is five bars for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_data_five_bars">Signal très très bon</string>
+
+    <!-- Content description of the battery level icon for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_battery_level">Batterie <xliff:g id="number">%d</xliff:g> pour cent.</string>
+
+    <!-- QuickSettings: Profile [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_profile_label">Profil</string>
+    <string name="quick_settings_network_adb_disabled_label">Désactivé</string>
+    <string name="quick_settings_network_adb_enabled_label">Activé</string>
+
+    <!-- GPS QS tile strings -->
+    <string name="quick_settings_gps_on_label">GPS activé</string>
+    <string name="quick_settings_gps_off_label">GPS désactivé</string>
+
+    <!-- Ad Blocker Tile -->
+    <string name="quick_settings_adblocker_on_label">Bloqueur de Publicités activé</string>
+    <string name="quick_settings_adblocker_off_label">Bloqueur de Publicités désactivé</string>
+
+    <!-- App Circle Bar Tile -->
+    <string name="quick_settings_appcirclebar_on_label">Cercle d\'Applications activé</string>
+    <string name="quick_settings_appcirclebar_off_label">Cercle d\'Applications désactivé</string>
+
+    <!-- NavBar Tile -->
+    <string name="quick_settings_navbar_on_label">Barre de Navigation activée</string>
+    <string name="quick_settings_navbar_off_label">Barre de Navigation désactivée</string>
+
+    <!-- Halo Tile -->
+    <string name="quick_settings_halo_on_label">Halo activé</string>
+    <string name="quick_settings_halo_off_label">Halo désactivé</string>
+
+    <!-- PIE Tile -->
+    <string name="quick_settings_pie_on_label">Pie activé</string>
+    <string name="quick_settings_pie_off_label">Pie désactivé</string>
+
+    <!-- Heads Up Tile -->
+    <string name="quick_settings_headsup_on_label">Notifications Flottantes activées</string>
+    <string name="quick_settings_headsup_off_label">Notifications Flottantes désactivées</string>
+
+    <!-- Screenshot Tile -->
+    <string name="quick_settings_screenshot_label">Capture d\'écran</string>
+    <string name="screenshot_toast">Capture d\'écran dans %1$d secondes</string>
+    <string name="permdesc_screenshot">Effectuer une capture d\'écran</string>
+    <string name="permlab_screenshot">Permet à l\'application de prendre une capture d\'écran. Ceci est protégé par SystemUI.</string>
+
+    <!-- On-The-Go Mode -->
+    <string name="quick_settings_onthego_back">Appareil photo arrière</string>
+    <string name="quick_settings_onthego_front">Appareil photo frontale</string>
+
 </resources>

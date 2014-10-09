@@ -452,7 +452,7 @@ protected:
      * Indicates the start of rendering. This method will setup the
      * initial OpenGL state (viewport, clearing the buffer, etc.)
      */
-    status_t startFrame();
+    status_t startFrame(bool useExTiling = false);
 
     /**
      * Clears the underlying surface if needed.
@@ -587,14 +587,15 @@ private:
      * This method needs to be invoked every time getTargetFbo() is
      * bound again.
      */
-    void startTiling(const sp<Snapshot>& snapshot, bool opaque = false);
+    void startTiling(const sp<Snapshot>& snapshot, bool opaque = false, bool expand = false);
 
+    void startTilingEx(const sp<Snapshot>& snapshot);
     /**
      * Tells the GPU what part of the screen is about to be redrawn.
      * This method needs to be invoked every time getTargetFbo() is
      * bound again.
      */
-    void startTiling(const Rect& clip, int windowHeight, bool opaque = false);
+    void startTiling(const Rect& clip, int windowHeight, bool opaque = false, bool expand = false);
 
     /**
      * Tells the GPU that we are done drawing the frame or that we
@@ -602,6 +603,7 @@ private:
      */
     void endTiling();
 
+    void endTilingEx();
     /**
      * Saves the current state of the renderer as a new snapshot.
      * The new snapshot is saved in mSnapshot and the previous snapshot
@@ -1116,6 +1118,11 @@ private:
 
     // No-ops start/endTiling when set
     bool mSuppressTiling;
+
+    //tiling to avoid unresolves when set
+    bool mExtendedTiling;
+    //extended tiling disabled or not
+    bool mExTilingDisabled;
 
     // If true, this renderer will setup drawing to emulate
     // an increment stencil buffer in the color buffer

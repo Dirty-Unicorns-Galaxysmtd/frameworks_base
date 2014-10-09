@@ -1,20 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="global_action_reboot">Redémarrer</string>
-    <string name="reboot_system" product="tablet">Redémarrer la tablette</string>
-    <string name="reboot_system" product="default">Redémarrer le téléphone</string>
-    <string name="reboot_reboot">Redémarrer</string>
-    <string name="reboot_recovery">Recovery</string>
-    <string name="reboot_bootloader">Bootloader</string>
-    <string name="reboot_bootmenu">Bootmenu</string>
-    <string name="reboot_fastboot">Fastboot</string>
-    <string name="reboot_download">Download</string>
-    <string name="reboot_progress">Redémarrage\u2026</string>
-    <string name="reboot_confirm" product="tablet">Votre tablette va redémarrer.</string>
-    <string name="reboot_confirm" product="default">Votre téléphone va redémarrer.</string>
+
     <string name="app_killed_message">Application arrêtée</string>
-    <string name="permlab_revokePermissions">Permet d\'afficher et de modifier les autorisations révoquées. Ne doit pas être utiliser par les applications courantes.</string>
-    <string name="permdesc_revokePermissions">Permet de lire et d\'écrire les autorisations révoquées. Ne doit pas être utiliser par les applications courantes.</string>
-    <string name="permlab_accessThemeService">Permet d\'accéder au service de gestion du thème. Ne doit pas être utiliser par les applications courantes.</string>
-    <string name="permdesc_accessThemeService">Permet à une application de définir/réinitialiser les thèmes. Ne doit pas être utiliser par les applications courantes.</string>
+
+    <!-- Title of an application permission that lets an application view/edit revoked permissions. -->
+    <string name="permlab_revokePermissions">Permet de visualiser et modifier les autorisations révoquées. Ne doit pas être utilisé par des applications normales.</string>
+    <!-- Description of an application permission that lets lets an application view/edit revoked permissions. -->
+    <string name="permdesc_revokePermissions">Permet de lire et écrire des autorisations révoquées. Ne doit pas être utilisé par des applications normales.</string>
+
+    <!-- Title of an application permission that lets an application access the ThemeManagerService. -->
+    <string name="permlab_accessThemeService">Permet d\'accéder au gestionnaire de thème. Ne doit pas être utilisé par des applications normales.</string>
+    <!-- Description of an application permission that lets lets an application access the ThemeManagerService -->
+    <string name="permdesc_accessThemeService">Permet à une application définir/réinitialiser les thèmes. Ne doit pas être utilisé par des applications normales.</string>
+
+    <!-- stylus gestures support -->
+    <string name="stylus_app_not_installed">%s n\'est pas installé</string>
+
+    <!-- label for item that takes screenrecord in the phone options dialog -->
+    <string name="global_action_screenrecord">Capture vidéo</string>
+
+    <!-- label for item that toggle wifi -->
+    <string name="global_actions_toggle_wifi">Wi-Fi</string>
+    <!-- status message in phone options dialog for when wifi is on -->
+    <string name="global_actions_wifi_on_status">Wi-Fi activé</string>
+    <!-- status message in phone options dialog for when wifi is off -->
+    <string name="global_actions_wifi_off_status">WiFi désactivé</string>
+
+    <!-- Button to reboot the tablet, within the Tablet Options dialog -->
+    <string name="reboot_system" product="tablet">Redémarrer la tablette</string>
+
+    <!-- Button to reboot the phone, within the Phone Options dialog -->
+    <string name="reboot_system" product="default">Redémarrer le téléphone</string>
+
+    <!-- label for item that screenshots in phone options dialog -->
+    <string name="global_action_screenshot">Capture d\'écran</string>
+
+    <!-- label for item that reboots the phone in phone options dialog -->
+    <string name="global_action_reboot">Redémarrage</string>
+    <!-- Button to reboot the phone, within the Reboot Options dialog -->
+    <string name="reboot_reboot">Redémarrer</string>
+    <!-- Button to reboot the phone into recovery, within the Reboot Options dialog -->
+    <string name="reboot_recovery">Recovery</string>
+    <!-- Button to reboot the phone into bootloader, within the Reboot Options dialog -->
+    <string name="reboot_bootloader">Bootloader</string>
+    <!-- Button to hot reboot the device, within the Reboot Options dialog -->
+    <string name="reboot_hot">Hot Reboot</string>
+    <!-- Button to reboot the phone into bootmenu, within the Reboot Options dialog -->
+    <string name="reboot_bootmenu">Bootmenu</string>
+    <!-- Button to reboot the phone into fastboot, within the Reboot Options dialog -->
+    <string name="reboot_fastboot">Fastboot</string>
+    <!-- Button to reboot the phone into download, within the Reboot Options dialog -->
+    <string name="reboot_download">Download</string>
+
+    <!-- Reboot Progress Dialog. This is shown if the user chooses to reboot the phone. -->
+    <string name="reboot_progress">Redémarrage\u2026</string>
+    <!-- Reboot Confirmation Dialog.  When the user chooses to reboot the tablet, there will be a confirmation dialog.  This is the message. -->
+    <string name="reboot_confirm" product="tablet">Votre tablette va redémarrer.</string>
+    <!-- Reboot Confirmation Dialog.  When the user chooses to reboot the phone, there will be a confirmation dialog.  This is the message. -->
+    <string name="reboot_confirm" product="default">Votre téléphone va redémarrer.</string>
+
+    <!-- Hot Reboot Progress Dialog title. Shown if the user chooses to hot reboot the tablet. -->
+    <string name="hot_reboot_title" product="tablet">Hot Reboot de la tablette</string>
+    <!-- Hot Reboot Progress Dialog title. Shown if the user chooses to hot reboot the phone. -->
+    <string name="hot_reboot_title" product="default">Hot Reboot du téléphone</string>
+
+    <!-- Hot Reboot Progress Dialog message. Shown if the user chooses to hot reboot the device. -->
+    <string name="hot_reboot_progress">Redémarrage d\'android framework\u2026</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_fakePackageSignature">Imiter la signature du paquet</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_fakePackageSignature">Permet à l\'application d\'imiter la signature du paquet d\'une autre application.</string>
+
+    <!-- label for item that toggle mobile data -->
+    <string name="global_actions_toggle_mobile_data">Données mobiles</string>
+
+    <!-- status message in phone options dialog for when mobile data is on -->
+    <string name="global_actions_mobile_data_on_status">Données mobiles activées</string>
+
+    <!-- status message in phone options dialog for when mobile data is off -->
+    <string name="global_actions_mobile_data_off_status">Données mobiles désactivées</string>
+
+    <!-- Storage description for the SD card on the dock. [CHAR LIMIT=NONE] -->
+    <string name="storage_sd_dock_card">Carte SD</string>
+
+    <!-- Privacy Guard -->
+    <string name="permlab_changePrivacyGuardState">Activer ou désactiver la Protection des Données</string>
+    <string name="permdesc_changePrivacyGuardState">Permet à l\'application de changer si une autre fonctionne avec la Protection des Données. La Protection des Données empêche  une application d\'accéder aux données personnelles telles que les contacts, les messages ou le journal d\'appels.</string>
+    <string name="privacy_guard_notification">Protection des Données active</string>
+    <string name="privacy_guard_notification_detail"><xliff:g id="app">%1$s</xliff:g> ne pourra pas accéder aux données personnelles</string>
+    <string name="privacy_guard_custom_notification_detail"><xliff:g id="app">%1$s</xliff:g> ne pourra pas accéder aux autorisations personnalisées</string>
+
+    <!--CyanogenMod Profiles -->
+    <!-- Names of default profiles. -->
+    <string name="profileNameDefault">Par défaut</string>
+    <string name="profileNameWork">Travail</string>
+    <string name="profileNameHome">Maison</string>
+    <string name="profileNameSilent">Silencieux</string>
+    <string name="profileNameNight">Nuit</string>
+
+    <!-- Names of application groups. -->
+    <string name="profileGroupPhone">Téléphone</string>
+    <string name="profileGroupCalendar">Calendrier</string>
+    <string name="profileGroupGmail">Gmail</string>
+    <string name="profileGroupEmail">Courriel</string>
+    <string name="profileGroupSMS">SMS</string>
+
+    <!-- Name of wildcard profile. -->
+    <string name="wildcardProfile">Autres</string>
+
+    <!-- label for item that opens the profile choosing dialog -->
+    <string name="global_action_choose_profile">Profil</string>
+
+    <!-- The title of the profile picker dialog. -->
+    <string name="profile_picker_title">Profils</string>
+
+    <!-- The item label for the no profile selection item. -->
+    <string name="profile_none">Aucun</string>
+
+    <!-- Animation Strings -->
+    <string name="animation_default">Par défaut</string>
+    <string name="animation_fade">Fondu</string>
+    <string name="animation_slide_right">Glisser à droite</string>
+    <string name="animation_slide_left">Glisser à gauche</string>
+    <string name="animation_slide_right_no_fade">Glisser à droite (sans Fondu)</string>
+    <string name="animation_slide_left_no_fade">Glisser à gauche (sans Fondu)</string>
+    <string name="animation_slide_up">Glisser en bas</string>
+    <string name="animation_slide_down">Glisser en haut</string>
+    <string name="animation_translucent">Translucide</string>
+    <string name="animation_grow_shrink">Agrandissement (Haut)</string>
+    <string name="animation_grow_shrink_center">Agrandissement (Centre)</string>
+    <string name="animation_grow_shrink_bottom">Agrandissement (Bas)</string>
+    <string name="animation_grow_shrink_left">Agrandissement (Gauche)</string>
+    <string name="animation_grow_shrink_right">Agrandissement (Droit)</string>
+    <string name="animation_random">Aléatoire</string>
+
+    <!-- label for item that takes On-The-Go in the phone options dialog -->
+    <string name="global_action_onthego">Mode On-The-Go</string>
+
+    <!-- Floating Window -->
+    <string name="floating_window_snap_top">Aligner en haut</string>
+    <string name="floating_window_snap_bottom">Aligner en bas</string>
+    <string name="floating_window_snap_left">Aligner à gauche</string>
+    <string name="floating_window_snap_right">Aligner à droite</string>
+
+    <!-- Immersive mode confirmation: Pick confirmation window from bottom when status bar is visible -->
+    <string name="immersive_mode_confirmation_bottom">Glisser de bas en haut pour quitter le mode plein écran.</string>
+
+    <!-- [CHAR LIMIT=NONE] Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_resetBatteryStats">réinitialiser les statistiques de la batterie</string>
+    <!-- [CHAR LIMIT=NONE] Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_resetBatteryStats">Permet à une application de rétablir les données actuelles d\'utilisation de la batterie à faible niveau.</string>
+
+    <!-- label for nav bar item in phone options dialog -->
+    <string name="global_actions_nav_bar_mode">Barre de Navigation</string>
+    <!-- status message in phone options dialog for when navigation bar is on -->
+    <string name="global_actions_nav_bar_mode_on_status">Barre de Navigation activée</string>
+    <!-- status message in phone options dialog for when navigation bar is off -->
+    <string name="global_actions_nav_bar_mode_off_status">Barre de Navigation désactivée</string>
+
+    <!-- USB_PREFERENCES: Notification for when the user connects the phone to a computer via USB in CHARGING mode.  This is the title -->
+    <string name="usb_charging_notification_title">Connecté en mode de charge</string>
+
+    <!-- In WiFi AP notification -->
+    <string name="notify_turn_wifi_ap_off_title">Désactiver le partage Wi-Fi</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want the application to do this. -->
+    <string name="permlab_setKeyguardWallpaper">modifier le fond d\'écran de verrouillage</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_setKeyguardWallpaper">Permet à une application de modifier le fond d\'écran de verrouillage.</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_readThemes">lire les informations du thème</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_readThemesDesc">Permet à une application de lister vos thèmes et de déterminer celui que vous avez appliqué.</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_writeThemes">modifier vos thèmes</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_writeThemesDesc">Permet à une application d\'ajouter de nouveaux thèmes et de modifier celui que vous avez appliqué.</string>
+
 </resources>

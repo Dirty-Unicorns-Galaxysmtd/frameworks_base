@@ -42,6 +42,7 @@
        <item><xliff:g id="id">alarm_clock</xliff:g></item>
        <item><xliff:g id="id">secure</xliff:g></item>
        <item><xliff:g id="id">clock</xliff:g></item>
+       <item><xliff:g id="id">quiet_hours</xliff:g></item>
     </string-array>
 
     <!-- Flag indicating whether the surface flinger has limited
@@ -584,7 +585,7 @@
     <integer name="config_defaultNotificationLedOn">500</integer>
 
     <!-- Default LED off time for notification LED in milliseconds. -->
-    <integer name="config_defaultNotificationLedOff">2000</integer>
+    <integer name="config_defaultNotificationLedOff">1000</integer>
 
     <!-- Default value for led color when battery is low on charge -->
     <integer name="config_notificationsBatteryLowARGB">0xFFFF0000</integer>
@@ -1367,12 +1368,16 @@
          config to 7. -->
     <integer name="config_deviceHardwareKeys">0</integer>
 
-    <integer name="config_backKillTimeout">2000</integer>
-
     <!-- LUN file to be used by legacy USB manager.
          The existence of this file will be used to determine in the
          legacy USB manager should be started. -->
     <string name="config_legacyUmsLunFile">/sys/devices/platform/usb_mass_storage/lun0/file</string>
+
+   <!-- Path to the library that contains a device specific key handler -->
+   <string name="config_deviceKeyHandlerLib" translatable="false"></string>
+
+   <!-- Name of that key handler class -->
+   <string name="config_deviceKeyHandlerClass" translatable="false"></string>
 
     <!-- Boolean to enable Stylus gestures -->
     <bool name="config_stylusGestures">false</bool>
@@ -1411,6 +1416,9 @@
     <!-- enable support for off-screen gesture support -->
     <bool name="config_offscreenGestureSupport">false</bool>
 
+    <!-- True if the gesture service should be started at system start -->
+    <bool name="config_enableGestureService">false</bool>
+
     <!-- The list of components which should be automatically disabled. -->
     <string-array name="config_disabledComponents" translatable="false">
     </string-array>
@@ -1427,5 +1435,4 @@
          the wallpaper width suggestion by the launcher may be too large for
          the GPU to handle. -->
     <integer name="config_wallpaperMaxWidth">-1</integer>
-
 </resources>

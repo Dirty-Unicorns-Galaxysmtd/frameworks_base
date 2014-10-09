@@ -23,7 +23,6 @@ public class QSConstants {
         public static final String TILE_BATTERY = "toggleBattery";
         public static final String TILE_SETTINGS = "toggleSettings";
         public static final String TILE_WIFI = "toggleWifi";
-        public static final String TILE_LOCATION = "toggleLocation";
         public static final String TILE_BLUETOOTH = "toggleBluetooth";
         public static final String TILE_BRIGHTNESS = "toggleBrightness";
         public static final String TILE_RINGER = "toggleSound";
@@ -32,6 +31,7 @@ public class QSConstants {
         public static final String TILE_SCREENTIMEOUT = "toggleScreenTimeout";
         public static final String TILE_MOBILEDATA = "toggleMobileData";
         public static final String TILE_LOCKSCREEN = "toggleLockScreen";
+        public static final String TILE_NETWORKMODE = "toggleNetworkMode";
         public static final String TILE_AUTOROTATE = "toggleAutoRotate";
         public static final String TILE_AIRPLANE = "toggleAirplane";
         public static final String TILE_TORCH = "toggleTorch";
@@ -45,11 +45,12 @@ public class QSConstants {
         public static final String TILE_REBOOT = "toggleReboot";
         public static final String TILE_CUSTOM = "toggleCustom";
         public static final String TILE_NETWORKADB = "toggleNetworkAdb";
-        public static final String TILE_GPS = "toggleGps";
+        public static final String TILE_LOCATION = "toggleLocation";
         public static final String TILE_FCHARGE = "toggleFastCharge";
         public static final String TILE_THEME = "toggleTheme";
         public static final String TILE_ADBLOCKER = "toggleAdblocker";
         public static final String TILE_HALO = "toggleHalo";
+        public static final String TILE_PIE = "togglePie";
         public static final String TILE_SCREENSHOT = "toggleScreenshot";
         public static final String TILE_APPCIRCLEBAR = "toggleAppcirclebar";
         public static final String TILE_ONTHEGO = "toggleOnTheGo";
@@ -58,6 +59,8 @@ public class QSConstants {
         public static final String TILE_NAVBAR = "toggleNavbar";
         public static final String TILE_HEADSUP = "toggleHeadsup";
         public static final String TILE_CAMERA = "toggleCamera";
+        public static final String TILE_CPUFREQ = "toggleCPUFreq";
+        public static final String TILE_DIRTYTWEAKS = "toggleDirtyTweaks";
 
         // dynamic tiles
         public static final String TILE_ALARM = "toggleAlarm";
@@ -67,6 +70,7 @@ public class QSConstants {
 
         //Key for custom tile additive
         public static final String TILE_CUSTOM_KEY = " Key=";
+        public static final String TILE_CUSTOM_DELIMITER = " =action= ";
 
         public static final String TILE_DELIMITER = "|";
         public static ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
@@ -75,13 +79,16 @@ public class QSConstants {
             TILES_DEFAULT.add(TILE_USER);
             TILES_DEFAULT.add(TILE_AIRPLANE);
             TILES_DEFAULT.add(TILE_SETTINGS);
+            TILES_DEFAULT.add(TILE_DIRTYTWEAKS);
             TILES_DEFAULT.add(TILE_REBOOT);
             TILES_DEFAULT.add(TILE_EXPANDEDDESKTOP);
             TILES_DEFAULT.add(TILE_WIFI);
             TILES_DEFAULT.add(TILE_MOBILEDATA);
             TILES_DEFAULT.add(TILE_BLUETOOTH);
             TILES_DEFAULT.add(TILE_LOCATION);
+            TILES_DEFAULT.add(TILE_SYNC);
             TILES_DEFAULT.add(TILE_AUTOROTATE);
+            TILES_DEFAULT.add(TILE_SCREENSHOT);
         }
 
         public static ArrayList<String> DYNAMIC_TILES_DEFAULT = new ArrayList<String>();

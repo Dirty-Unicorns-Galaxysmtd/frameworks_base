@@ -1,5 +1,9 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+ *
+ * Not a Contribution. Apache license notifications and license are retained
+ * for attribution purposes only.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +82,7 @@ public class ListPopupWindow {
     private boolean mDropDownVerticalOffsetSet;
 
     private int mDropDownGravity = Gravity.NO_GRAVITY;
+    private boolean mAllowLeftOverdraw;
 
     private boolean mDropDownAlwaysVisible = false;
     private boolean mForceIgnoreOutsideTouch = false;
@@ -452,6 +457,18 @@ public class ListPopupWindow {
     }
 
     /**
+     * Allow the popup window to draw outside the left edge of the container
+     * if mClipToScreen = true.
+     *
+     * @param enabled True to allow outside draw (default = false).
+     * @see #findDropDownPosition - #link:PopupWindow.java
+     * @hide
+     */
+    public void setAllowLeftOverdraw(boolean enabled) {
+        mAllowLeftOverdraw = enabled;
+    }
+
+    /**
      * @return The width of the popup window in pixels.
      */
     public int getWidth() {
@@ -617,6 +634,7 @@ public class ListPopupWindow {
 
             mPopup.setWindowLayoutMode(widthSpec, heightSpec);
             mPopup.setClipToScreenEnabled(true);
+            mPopup.setAllowLeftOverdraw(mAllowLeftOverdraw);
             
             // use outside touchable to dismiss drop down when touching outside of it, so
             // only set this if the dropdown is not always visible
@@ -747,6 +765,14 @@ public class ListPopupWindow {
         if (isShowing()) {
             if (mItemClickListener != null) {
                 final DropDownListView list = mDropDownList;
+
+                // Sometimes the perform item is not visible in ListView then
+                // 'list.getChildAt' method will return null. So we should call
+                // 'list.setSelectionInt' method to make sure the item is
+                // visible.
+                if (list.getLastVisiblePosition() < position) {
+                    list.setSelectionInt(position);
+                }
                 final View child = list.getChildAt(position - list.getFirstVisiblePosition());
                 final ListAdapter adapter = list.getAdapter();
                 mItemClickListener.onItemClick(list, child, position, adapter.getItemId(position));

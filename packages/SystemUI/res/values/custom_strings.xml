@@ -115,6 +115,11 @@
     <string name="toast_items_saved">Appbar items have been saved.</string>
     <string name="content_setup_instructions">Add items to the Appbar by long pressing any item on the right and drag it over to the Appbar.\n\nCombine items into folders by droping an item onto any existing item in the Appbar.\n\nTo remove an item simply drag it out of the \@appbar.</string>
     <string name="content_setup_dismiss">Continue</string>
+    
+    <!-- Off/On/Toggle -->
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="toggle">Toggle</string>
 
     <!-- Quick Settings -->
     <string name="quick_settings_gps">GPS</string>
@@ -144,7 +149,7 @@
     <string name="quick_settings_usb_tether_on_label">Tethering</string>
     <string name="quick_settings_wifiap">Wi-Fi AP</string>
     <string name="quick_settings_wifiap_off">Wi-Fi AP off</string>
-    <string name="quick_settings_quiethours">Quiet hours</string>
+    <string name="quick_settings_quiethours">Quiet hours on</string>
     <string name="quick_settings_quiethours_off">Quiet hours off</string>
     <string name="quick_settings_lte">LTE</string>
     <string name="quick_settings_lte_off">LTE off</string>
@@ -176,11 +181,7 @@
     <string name="status_bar_recent_unlock_item_title">Unlock</string>
 
     <!-- Hide Them Shitz -->
-    <string name="status_bar_notification_hide_icon_packages">Hide notification icon</string>
-
-    <!-- Slim recents -->
-    <string name="status_bar_recent_playstore_item_title">Play Store</string>
-    <string name="status_bar_recent_amazon_item_title">Amazon Store</string>
+    <string name="status_bar_notification_hide_icon_packages">Hide notification</string>
 
     <!-- On The Go -->
     <string name="onthego_notif_ticker">On-The-Go activated</string>
@@ -219,16 +220,13 @@
     <!-- Title shown in notification popup for launching notification in floating mode -->
     <string name="status_bar_notification_floating_item_title">Floating mode</string>
 
+    <!-- Spam -->
+    <string name="status_bar_notification_spam_item_title">Block notification</string>
+
     <!-- App circle sidebar -->
     <string name="app_float_maximize_item_title">Maximize</string>
     <string name="app_float_item_title">Float view</string>
     <string name="app_stop_item_title">Kill app</string>
-
-    <!-- Title shown in notification popup for launching notification in floating mode -->
-    <string name="status_bar_notification_floating_item_title">Floating mode</string>
-
-    <!-- Title shown in recents popup for showing app in floating mode -->
-    <string name="status_bar_recent_floating_item_title">Floating mode</string>
 
     <string name="quick_settings_compass_off">Compass off</string>
     <string name="quick_settings_compass_init">Initializing\u2026</string>
@@ -236,5 +234,31 @@
 
     <!-- Content description of the data connection type DC-HSPA+ for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_data_connection_DC" translatable="false">DC-HSPA+</string>
+
+    <!-- CPUFreq -->
+    <string name="cpufreq_max">Max CPU Freq</string>
+    <string name="cpufreq_min">Min CPU Freq</string>
+
+    <string name="accessibility_dpad_left">Cursor left</string>
+    <string name="accessibility_dpad_right">Cursor right</string>
+
+    <!--Show plug type for battery tile -->
+    <string name="power_ac"> (AC)</string>
+    <string name="power_usb"> (USB)</string>
+    <string name="power_wireless"> (wireless)</string>
+    <string name="power_ac_usb"> (AC+USB)</string>
+
+    <!-- PIE -->
+    <string name="pie_date_format">ccc, dd MMM yyyy</string>
+    <string name="pie_hour_format_12">hh:mm</string>
+    <string name="pie_hour_format_24">HH:mm</string>
+    <string name="pie_am_pm">a</string>
+
+    <!-- Lock and Add buttons -->
+    <string name="accessibility_lock_button">Add Power button</string>
+    <string name="accessibility_add_button">Add QS button</string>
+
+    <!-- Dirty Tweaks -->
+    <string name="quick_settings_dirtytweaks">Dirty Tweaks</string>
 
 </resources>

@@ -87,6 +87,10 @@ public class PhoneStatusBarView extends PanelBar {
         return mBarTransitions;
     }
 
+    public PhoneStatusBarTransitions getPhoneStatusBarTransitions() {
+        return mBarTransitions;
+    }
+
     public void setBar(PhoneStatusBar bar) {
         mBar = bar;
     }
@@ -226,7 +230,7 @@ public class PhoneStatusBarView extends PanelBar {
         }
 
         if (Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.DOUBLE_TAP_TO_SLEEP, 0) == 1) {
+                    Settings.System.DOUBLE_TAP_SLEEP_STATUS_BAR, 0) == 1) {
             mDoubleTapGesture.onTouchEvent(event);
         }
         return barConsumedEvent || super.onTouchEvent(event);
@@ -280,5 +284,14 @@ public class PhoneStatusBarView extends PanelBar {
         mBar.animateHeadsUp(mNotificationPanel == panel, mPanelExpandedFractionSum);
 
         mBar.updateCarrierAndWifiLabelVisibility(false);
+    }
+
+    // PIE
+    @Override
+    public void collapseAllPanels(boolean animate) {
+        super.collapseAllPanels(animate);
+
+        if (mBar.mPieControlPanel != null)
+            mBar.mPieControlPanel.animateCollapsePanels();
     }
 }

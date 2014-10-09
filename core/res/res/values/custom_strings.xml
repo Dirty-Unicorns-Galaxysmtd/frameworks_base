@@ -17,7 +17,14 @@
     <string name="stylus_app_not_installed">%s is not installed</string>
 
     <!-- label for item that takes screenrecord in the phone options dialog -->
-    <string name="global_action_screenrecord">Screen Record</string>
+    <string name="global_action_screenrecord">Screen record</string>
+
+    <!-- label for item that toggle wifi -->
+    <string name="global_actions_toggle_wifi">WiFi</string>
+    <!-- status message in phone options dialog for when wifi is on -->
+    <string name="global_actions_wifi_on_status">WiFi is ON</string>
+    <!-- status message in phone options dialog for when wifi is off -->
+    <string name="global_actions_wifi_off_status">WiFi is OFF</string>
 
     <!-- Button to reboot the tablet, within the Tablet Options dialog -->
     <string name="reboot_system" product="tablet">Reboot tablet</string>
@@ -59,6 +66,11 @@
 
     <!-- Hot Reboot Progress Dialog message. Shown if the user chooses to hot reboot the device. -->
     <string name="hot_reboot_progress">Restarting android framework\u2026</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_fakePackageSignature">mimic package signature</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_fakePackageSignature">Allows the app to use mimic another app\'s package signature.</string>
 
     <!-- label for item that toggle mobile data -->
     <string name="global_actions_toggle_mobile_data">Mobile data</string>
@@ -124,13 +136,14 @@
     <string name="animation_random">Random</string>
 
     <!-- label for item that takes On-The-Go in the phone options dialog -->
-    <string name="global_action_onthego">On-The-Go Mode</string>
+    <string name="global_action_onthego">On-The-Go mode</string>
 
     <!-- Floating Window -->
     <string name="floating_window_snap_top">Snap top</string>
     <string name="floating_window_snap_bottom">Snap bottom</string>
     <string name="floating_window_snap_left">Snap left</string>
     <string name="floating_window_snap_right">Snap right</string>
+    <string name="floating_window_minimize">Minimize</string>
 
     <!-- Immersive mode confirmation: Pick confirmation window from bottom when status bar is visible -->
     <string name="immersive_mode_confirmation_bottom">Swipe up from the bottom to exit full screen.</string>
@@ -139,5 +152,12 @@
     <string name="permlab_resetBatteryStats">reset battery statistics</string>
     <!-- [CHAR LIMIT=NONE] Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_resetBatteryStats">Allows an application to reset the current low-level battery use data.</string>
+
+    <!-- label for nav bar item in phone options dialog -->
+    <string name="global_actions_nav_bar_mode">Navigation bar</string>
+    <!-- status message in phone options dialog for when navigation bar is on -->
+    <string name="global_actions_nav_bar_mode_on_status">Navigation bar is ON</string>
+    <!-- status message in phone options dialog for when navigation bar is off -->
+    <string name="global_actions_nav_bar_mode_off_status">Navigation bar is OFF</string>
 
 </resources> 

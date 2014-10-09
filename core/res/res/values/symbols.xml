@@ -1346,6 +1346,8 @@
   <java-symbol type="drawable" name="ic_lock_screen_record" />
   <java-symbol type="drawable" name="ic_lock_mobile_data" />
   <java-symbol type="drawable" name="ic_lock_mobile_data_off" />
+  <java-symbol type="drawable" name="ic_lock_wifi" />
+  <java-symbol type="drawable" name="ic_lock_wifi_off" />
   <java-symbol type="drawable" name="ic_menu_cc" />
   <java-symbol type="drawable" name="jog_tab_bar_left_unlock" />
   <java-symbol type="drawable" name="jog_tab_bar_right_sound_off" />
@@ -1417,6 +1419,9 @@
   <java-symbol type="string" name="global_actions_mobile_data_off_status" />
   <java-symbol type="string" name="global_actions_mobile_data_on_status" />
   <java-symbol type="string" name="global_actions_toggle_mobile_data" />
+  <java-symbol type="string" name="global_actions_wifi_off_status" />
+  <java-symbol type="string" name="global_actions_wifi_on_status" />
+  <java-symbol type="string" name="global_actions_toggle_wifi" />
   <java-symbol type="string" name="global_action_bug_report" />
   <java-symbol type="string" name="global_action_silent_mode_off_status" />
   <java-symbol type="string" name="global_action_silent_mode_on_status" />
@@ -1625,6 +1630,7 @@
   <java-symbol type="string" name="usb_notification_message" />
   <java-symbol type="string" name="use_physical_keyboard" />
   <java-symbol type="string" name="usb_ptp_notification_title" />
+  <java-symbol type="string" name="usb_charging_notification_title" />
   <java-symbol type="string" name="vpn_text" />
   <java-symbol type="string" name="vpn_text_long" />
   <java-symbol type="string" name="vpn_title" />
@@ -1799,11 +1805,12 @@
   <!-- CM -->
   <java-symbol type="bool" name="config_samsung_stk" />
   <java-symbol type="integer" name="config_deviceHardwareKeys" />
-  <java-symbol type="integer" name="config_backKillTimeout" />
   <java-symbol type="string" name="app_killed_message" />
   <java-symbol type="bool" name="config_hasRemovableLid" />
   <java-symbol type="string" name="config_legacyUmsLunFile" />
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
+  <java-symbol type="string" name="config_deviceKeyHandlerLib" />
+  <java-symbol type="string" name="config_deviceKeyHandlerClass" />
 
   <!-- In WiFi AP notification -->
   <java-symbol type="string" name="notify_turn_wifi_ap_off_title" />
@@ -1821,7 +1828,6 @@
 
   <!-- Boot message dialog -->
   <java-symbol type="drawable" name="busy_dlg_animation" />
-  <java-symbol type="drawable" name="busy_dlg_animation_0" />
   <java-symbol type="drawable" name="busy_dlg_animation_1" />
   <java-symbol type="drawable" name="busy_dlg_animation_2" />
   <java-symbol type="drawable" name="busy_dlg_animation_3" />
@@ -1833,7 +1839,25 @@
   <java-symbol type="drawable" name="busy_dlg_animation_9" />
   <java-symbol type="drawable" name="busy_dlg_animation_10" />
   <java-symbol type="drawable" name="busy_dlg_animation_11" />
-  <java-symbol type="drawable" name="busy_dlg_icon" />
+  <java-symbol type="drawable" name="busy_dlg_animation_12" />
+  <java-symbol type="drawable" name="busy_dlg_animation_13" />
+  <java-symbol type="drawable" name="busy_dlg_animation_14" />
+  <java-symbol type="drawable" name="busy_dlg_animation_15" />
+  <java-symbol type="drawable" name="busy_dlg_animation_16" />
+  <java-symbol type="drawable" name="busy_dlg_animation_17" />
+  <java-symbol type="drawable" name="busy_dlg_animation_18" />
+  <java-symbol type="drawable" name="busy_dlg_animation_19" />
+  <java-symbol type="drawable" name="busy_dlg_animation_20" />
+  <java-symbol type="drawable" name="busy_dlg_animation_21" />
+  <java-symbol type="drawable" name="busy_dlg_animation_22" />
+  <java-symbol type="drawable" name="busy_dlg_animation_23" />
+  <java-symbol type="drawable" name="busy_dlg_animation_24" />
+  <java-symbol type="drawable" name="busy_dlg_animation_25" />
+  <java-symbol type="drawable" name="busy_dlg_animation_26" />
+  <java-symbol type="drawable" name="busy_dlg_animation_27" />
+  <java-symbol type="drawable" name="busy_dlg_animation_28" />
+  <java-symbol type="drawable" name="busy_dlg_animation_29" />
+  <java-symbol type="drawable" name="busy_dlg_animation_30" />
   <java-symbol type="id" name="busy_dlg_animation" />
   <java-symbol type="id" name="busy_dlg_title" />
   <java-symbol type="layout" name="busy_dlg" />
@@ -1851,6 +1875,9 @@
   <java-symbol type="string" name="minutes" />
   <java-symbol type="string" name="second" />
   <java-symbol type="string" name="seconds" />
+
+  <!-- Gesture Sensor -->
+  <java-symbol type="bool" name="config_enableGestureService" />
 
   <!-- Privacy Guard -->
   <java-symbol type="string" name="privacy_guard_notification" />
@@ -1931,7 +1958,9 @@
   <java-symbol type="integer" name="config_recentDefaultDur" />
   <java-symbol type="integer" name="config_recentExitDur" />
   <java-symbol type="style" name="Animation.RecentScreen" />
+  <java-symbol type="style" name="Animation.RecentScreen.Left" />
   <java-symbol type="anim" name="recent_screen_enter" />
+  <java-symbol type="anim" name="recent_screen_enter_left" />
   <java-symbol type="anim" name="recent_screen_fade_out" />
 
   <java-symbol type="bool" name="config_offscreenGestureSupport" />
@@ -1956,8 +1985,14 @@
   <java-symbol type="string" name="floating_window_snap_bottom"/>
   <java-symbol type="string" name="floating_window_snap_left"/>
   <java-symbol type="string" name="floating_window_snap_right"/>
+  <java-symbol type="string" name="floating_window_minimize"/>
 
   <!-- Config.xml entries -->
   <java-symbol type="integer" name="config_wallpaperMaxWidth" />
+
+  <!-- EdgeGesture service -->
+  <java-symbol type="dimen" name="edge_gesture_trigger_distance" />
+  <java-symbol type="dimen" name="edge_gesture_perpendicular_distance" />
+  <java-symbol type="dimen" name="edge_gesture_trigger_thickness" />
 
 </resources>

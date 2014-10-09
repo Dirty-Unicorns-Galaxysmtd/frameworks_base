@@ -44,6 +44,7 @@ import android.view.KeyEvent;
 import android.view.WindowManagerGlobal;
 import android.widget.Toast;
 
+import com.android.internal.util.du.TorchConstants;
 import com.android.internal.statusbar.IStatusBarService;
 
 import java.net.URISyntaxException;
@@ -54,6 +55,12 @@ public class SlimActions {
     private static final int MSG_INJECT_KEY_UP = 1067;
 
     public static void processAction(Context context, String action, boolean isLongpress) {
+        processActionWithOptions(context, action, isLongpress, true);
+    }
+
+    public static void processActionWithOptions(
+                Context context, String action, boolean isLongpress,
+                boolean collapseShade) {
             if (action == null || action.equals(ButtonsConstants.ACTION_NULL)) {
                 return;
             }
@@ -76,12 +83,15 @@ public class SlimActions {
             } catch (RemoteException e) {
             }
 
-            if (!action.equals(ButtonsConstants.ACTION_QS)
-                    && !action.equals(ButtonsConstants.ACTION_NOTIFICATIONS)) {
-                try {
-                    barService.collapsePanels();
-                } catch (RemoteException ex) {
-                }
+            if (collapseShade) {
+                    if (!action.equals(ButtonsConstants.ACTION_QS)
+                            && !action.equals(ButtonsConstants.ACTION_NOTIFICATIONS)
+                            && !action.equals(ButtonsConstants.ACTION_TORCH)) {
+                        try {
+                            barService.collapsePanels();
+                        } catch (RemoteException ex) {
+                        }
+                    }
             }
 
             // process the actions
@@ -129,6 +139,12 @@ public class SlimActions {
                     return;
                 }
                 try {
+                    // Perform all related with recent
+                    // in a attempt to fix blank slimroms
+                    // recent panel sometimes preloading
+                    // with PIE
+                    barService.cancelPreloadRecentApps();
+                    barService.preloadRecentApps();
                     barService.toggleRecentApps();
                 } catch (RemoteException e) {
                 }
@@ -211,6 +227,11 @@ public class SlimActions {
                 return;
             }
 
+    }
+
+    public static boolean isNavBarDefault(Context context) {
+        return context.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
     }
 
     private static void startActivity(Context context, IWindowManager windowManagerService,

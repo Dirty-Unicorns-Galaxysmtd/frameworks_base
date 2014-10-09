@@ -35,6 +35,7 @@ import android.view.WindowManager;
 import android.util.Log;
 import android.provider.Settings;
 
+import com.android.internal.util.du.TorchConstants;
 import com.android.internal.telephony.PhoneConstants;
 
 import java.io.File;
@@ -98,6 +99,20 @@ public class DeviceUtils {
     public static boolean deviceSupportsVibrator(Context ctx) {
         Vibrator vibrator = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
         return vibrator.hasVibrator();
+    }
+
+    public static boolean deviceSupportsSearch(Context context) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            List<ApplicationInfo> packages = pm.getInstalledApplications(0);
+                for (ApplicationInfo packageInfo : packages) {
+                    if (packageInfo.packageName.equals(TorchConstants.GOOGLE_SEARCH)) {
+                        return true;
+                    }
+                }
+        } catch (Exception e) {
+        }
+        return false;
     }
 
     public static boolean deviceSupportsTorch(Context context) {
@@ -192,6 +207,17 @@ public class DeviceUtils {
             return false;
         }
         return true;
+    }
+
+    public static boolean deviceSupportsCPUFreq() {
+        /*
+         * Actually every kernel should support this,
+         * but just in case!
+         */
+        String[] paths = { "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" };
+        for (String path : paths)
+            if (new File(path).exists()) return true;
+        return false;
     }
 
     public static boolean deviceSupportsCompass(Context context) {

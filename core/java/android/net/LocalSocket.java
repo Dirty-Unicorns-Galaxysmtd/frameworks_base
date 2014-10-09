@@ -29,7 +29,7 @@ import java.net.SocketOptions;
  */
 public class LocalSocket implements Closeable {
 
-    private LocalSocketImpl impl;
+    private final LocalSocketImpl impl;
     private volatile boolean implCreated;
     private LocalSocketAddress localAddress;
     private boolean isBound;
@@ -183,6 +183,19 @@ public class LocalSocket implements Closeable {
     public OutputStream getOutputStream() throws IOException {
         implCreateIfNeeded();
         return impl.getOutputStream();
+    }
+
+    /**
+     * Set the flag to close the fd whcih was opened
+     * externally
+     *
+     * @return none
+     * @throws IOException if socket has been closed
+     * @hide
+     */
+    public void closeExternalFd() throws IOException {
+        implCreateIfNeeded();
+        impl.closeExternalFd();
     }
 
     /**

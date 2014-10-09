@@ -29,7 +29,9 @@ import android.app.Dialog;
 import android.app.Profile;
 import android.app.ProfileManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -40,10 +42,11 @@ import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
@@ -74,8 +77,6 @@ import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.internal.util.nameless.NamelessActions;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -89,6 +90,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
 
+import com.android.internal.util.slim.SlimActions;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -110,29 +112,32 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private final WindowManagerFuncs mWindowManagerFuncs;
 
     private Context mUiContext;
-
     private final AudioManager mAudioManager;
     private final IDreamManager mDreamManager;
 
     private ArrayList<Action> mItems;
     private GlobalActionsDialog mDialog;
+    private Handler mObservHandler = new Handler();
 
     private Action mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
     private ToggleAction mMobileDataOn;
-
+    private ToggleAction mWifiOn;
+    private ToggleAction mNavBarModeOn;
 
     private MyAdapter mAdapter;
 
     private boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
+    private ToggleAction.State mNavBarState = ToggleAction.State.Off;
     private boolean mShowProfiles = true;
     private boolean mIsWaitingForEcmExit = false;
     private boolean mHasTelephony;
     private boolean mHasVibrator;
     private final boolean mShowSilentToggle;
     private final boolean mShowScreenRecord;
+    private WifiManager mWifiManager;
     private int mHiddenMenuOptions;
     private boolean mDisableToolbox;
 
@@ -164,6 +169,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         mHasTelephony = cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE);
+        mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 
         ThemeUtils.registerThemeChangeReceiver(context, mThemeChangeReceiver);
 
@@ -261,6 +267,27 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         } else {
             mSilentModeAction = new SilentModeTriStateAction(mContext, mAudioManager, mHandler);
         }
+        mNavBarModeOn = new ToggleAction(
+                R.drawable.ic_lock_navbar_on,
+                R.drawable.ic_lock_navbar_off,
+                R.string.global_actions_nav_bar_mode,
+                R.string.global_actions_nav_bar_mode_on_status,
+                R.string.global_actions_nav_bar_mode_off_status) {
+
+            void onToggle(boolean on) {
+                changeNavBarSetting(on);
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
+        onNavBarModeChanged();
+
         mAirplaneModeOn = new ToggleAction(
                 R.drawable.ic_lock_airplane_mode,
                 R.drawable.ic_lock_airplane_mode_off,
@@ -303,6 +330,33 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
         };
         onAirplaneModeChanged();
+
+        mWifiOn = new ToggleAction(
+                R.drawable.ic_lock_wifi,
+                R.drawable.ic_lock_wifi_off,
+                R.string.global_actions_toggle_wifi,
+                R.string.global_actions_wifi_on_status,
+                R.string.global_actions_wifi_off_status) {
+
+            void onToggle(boolean on) {
+                mWifiManager.setWifiEnabled(!mWifiManager.isWifiEnabled());
+            }
+
+            @Override
+            protected void changeStateFromPress(boolean buttonOn) {
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
+
+        final ContentResolver cr = mContext.getContentResolver();
+        mItems = new ArrayList<Action>();
 
         mMobileDataOn = new ToggleAction(
                 R.drawable.ic_lock_mobile_data,
@@ -411,7 +465,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(mMobileDataOn);
         }
 
-     // next: screenshot, if enabled
+        // next: wifi
+        if (Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_WIFI_ENABLED, 0, UserHandle.USER_CURRENT) == 1) {
+            mItems.add(mWifiOn);
+        }
+
+        // next: screenshot, if enabled
         if (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.SCREENSHOT_IN_POWER_MENU, 0) != 0) {
             mItems.add(
@@ -494,8 +554,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         R.string.global_action_onthego) {
 
                         public void onPress() {
-                            NamelessActions.processAction(mContext,
-                                    NamelessActions.ACTION_ONTHEGO_TOGGLE);
+                            final ComponentName cn = new ComponentName("com.android.systemui",
+                                    "com.android.systemui.nameless.onthego.OnTheGoService");
+                            final Intent startIntent = new Intent();
+                            startIntent.setComponent(cn);
+                            startIntent.setAction("start");
+                            mContext.startService(startIntent);
                         }
 
                         public boolean onLongPress() {
@@ -511,6 +575,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         }
                     }
             );
+        }
+
+        // next: Nav Bar toggle
+        boolean showNavBar = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_NAV_BAR_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+
+        if (showNavBar) {
+            mItems.add(mNavBarModeOn);
         }
 
         // next: airplane mode
@@ -814,7 +886,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             names[i++] = profile.getName();
         }
 
-        final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
+        final AlertDialog.Builder ab = new AlertDialog.Builder(getUiContext());
 
         AlertDialog dialog = ab
                 .setTitle(R.string.global_action_choose_profile)
@@ -854,12 +926,21 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         refreshSilentMode();
         mAirplaneModeOn.updateState(mAirplaneState);
         mMobileDataOn.updateState(dataEnabled() ? ToggleAction.State.On : ToggleAction.State.Off);
+        mWifiOn.updateState(mWifiManager.isWifiEnabled() ? ToggleAction.State.On : ToggleAction.State.Off);
         mAdapter.notifyDataSetChanged();
         mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         if (mShowSilentToggle && (mHiddenMenuOptions & HIDE_SOUND) != HIDE_SOUND) {
             IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
             mContext.registerReceiver(mRingerModeReceiver, filter);
         }
+
+        if (mNavBarModeOn != null) {
+            mNavBarModeOn.updateState(mNavBarState);
+        }
+
+        // Start observing setting changes during
+        // dialog shows up
+        mSettingsObserver.observe();
     }
 
     private void refreshSilentMode() {
@@ -881,6 +962,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Log.w(TAG, ie);
             }
         }
+        mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
     }
 
     /** {@inheritDoc} */
@@ -1350,14 +1432,38 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
     };
 
+    private SettingsObserver mSettingsObserver = new SettingsObserver(new Handler());
+    private final class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_SHOW), false, this,
+                    UserHandle.USER_ALL);
+
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            super.onChange(selfChange, uri);
+            if (uri.equals(Settings.System.getUriFor(
+                Settings.System.NAVIGATION_BAR_SHOW))) {
+                onNavBarModeChanged();
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
     PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
         @Override
         public void onServiceStateChanged(ServiceState serviceState) {
             if (!mHasTelephony || mAirplaneModeOn == null || mAdapter == null) return;
             final boolean inAirplaneMode = serviceState.getState() == ServiceState.STATE_POWER_OFF;
             mAirplaneState = inAirplaneMode ? ToggleAction.State.On : ToggleAction.State.Off;
-            mAirplaneModeOn.updateState(mAirplaneState);
-            mAdapter.notifyDataSetChanged();
+            mHandler.sendEmptyMessage(MESSAGE_REFRESH_AIRPLANEMODE);
         }
     };
 
@@ -1380,6 +1486,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private static final int MESSAGE_DISMISS = 0;
     private static final int MESSAGE_REFRESH = 1;
     private static final int MESSAGE_SHOW = 2;
+    private static final int MESSAGE_REFRESH_AIRPLANEMODE = 3;
     private static final int DIALOG_DISMISS_DELAY = 300; // ms
 
     private Handler mHandler = new Handler() {
@@ -1397,20 +1504,39 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             case MESSAGE_SHOW:
                 handleShow();
                 break;
+            case MESSAGE_REFRESH_AIRPLANEMODE:
+                mAirplaneModeOn.updateState(mAirplaneState);
+                mAdapter.notifyDataSetChanged();
+                break;
             }
         }
     };
+
+    private ToggleAction.State getUpdatedAirplaneToggleState() {
+        return (Settings.Global.getInt(mContext.getContentResolver(),
+                    Settings.Global.AIRPLANE_MODE_ON, 0) == 1) ?
+                ToggleAction.State.On : ToggleAction.State.Off;
+    }
 
     private void onAirplaneModeChanged() {
         // Let the service state callbacks handle the state.
         if (mHasTelephony) return;
 
-        boolean airplaneModeOn = Settings.Global.getInt(
-                mContext.getContentResolver(),
-                Settings.Global.AIRPLANE_MODE_ON,
-                0) == 1;
-        mAirplaneState = airplaneModeOn ? ToggleAction.State.On : ToggleAction.State.Off;
+        mAirplaneState = getUpdatedAirplaneToggleState();
         mAirplaneModeOn.updateState(mAirplaneState);
+    }
+
+    private void onNavBarModeChanged() {
+        boolean defaultValue = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
+        boolean navBarModeOn = Settings.System.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_SHOW,
+                defaultValue ? 1 : 0, UserHandle.USER_CURRENT) == 1;
+        mNavBarState = navBarModeOn ? ToggleAction.State.On : ToggleAction.State.Off;
+        if (mNavBarModeOn != null) {
+            mNavBarModeOn.updateState(mNavBarState);
+        }
     }
 
     /**
@@ -1428,6 +1554,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         if (!mHasTelephony) {
             mAirplaneState = on ? ToggleAction.State.On : ToggleAction.State.Off;
         }
+    }
+
+    private void changeNavBarSetting(boolean on) {
+        Settings.System.putIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_SHOW,
+                on ? 1 : 0, UserHandle.USER_CURRENT);
     }
 
     private void checkSettings() {

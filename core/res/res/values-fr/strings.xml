@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /* //device/apps/common/assets/res/any/strings.xml
 **
 ** Copyright 2006, The Android Open Source Project
@@ -1665,4 +1665,5 @@
   </plurals>
     <string name="restr_pin_try_later" msgid="973144472490532377">"Veuillez réessayer ultérieurement."</string>
     <string name="immersive_mode_confirmation" msgid="7227416894979047467">"Faites glisser le doigt vers le bas pour quitter le mode plein écran."</string>
+
 </resources>

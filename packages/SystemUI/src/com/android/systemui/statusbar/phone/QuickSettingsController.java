@@ -35,6 +35,7 @@ import static com.android.internal.util.slim.QSConstants.TILE_LOCATION;
 import static com.android.internal.util.slim.QSConstants.TILE_LOCKSCREEN;
 import static com.android.internal.util.slim.QSConstants.TILE_MOBILEDATA;
 import static com.android.internal.util.slim.QSConstants.TILE_MUSIC;
+import static com.android.internal.util.slim.QSConstants.TILE_NETWORKMODE;
 import static com.android.internal.util.slim.QSConstants.TILE_NFC;
 import static com.android.internal.util.slim.QSConstants.TILE_QUICKRECORD;
 import static com.android.internal.util.slim.QSConstants.TILE_QUIETHOURS;
@@ -52,10 +53,10 @@ import static com.android.internal.util.slim.QSConstants.TILE_WIFI;
 import static com.android.internal.util.slim.QSConstants.TILE_WIFIAP;
 import static com.android.internal.util.slim.QSConstants.TILE_REBOOT;
 import static com.android.internal.util.slim.QSConstants.TILE_NETWORKADB;
-import static com.android.internal.util.slim.QSConstants.TILE_GPS;
 import static com.android.internal.util.slim.QSConstants.TILE_FCHARGE;
 import static com.android.internal.util.slim.QSConstants.TILE_ADBLOCKER;
 import static com.android.internal.util.slim.QSConstants.TILE_HALO;
+import static com.android.internal.util.slim.QSConstants.TILE_PIE;
 import static com.android.internal.util.slim.QSConstants.TILE_SCREENSHOT;
 import static com.android.internal.util.slim.QSConstants.TILE_APPCIRCLEBAR;
 import static com.android.internal.util.slim.QSConstants.TILE_ONTHEGO;
@@ -63,6 +64,8 @@ import static com.android.internal.util.slim.QSConstants.TILE_PROFILE;
 import static com.android.internal.util.slim.QSConstants.TILE_NAVBAR;
 import static com.android.internal.util.slim.QSConstants.TILE_HEADSUP;
 import static com.android.internal.util.slim.QSConstants.TILE_CAMERA;
+import static com.android.internal.util.slim.QSConstants.TILE_CPUFREQ;
+import static com.android.internal.util.slim.QSConstants.TILE_DIRTYTWEAKS;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -94,6 +97,7 @@ import com.android.systemui.quicksettings.ExpandedDesktopTile;
 import com.android.systemui.quicksettings.LocationTile;
 import com.android.systemui.quicksettings.InputMethodTile;
 import com.android.systemui.quicksettings.MobileNetworkTile;
+import com.android.systemui.quicksettings.MobileNetworkTypeTile;
 import com.android.systemui.quicksettings.MusicTile;
 import com.android.systemui.quicksettings.NetworkAdbTile;
 import com.android.systemui.quicksettings.NfcTile;
@@ -114,10 +118,10 @@ import com.android.systemui.quicksettings.VolumeTile;
 import com.android.systemui.quicksettings.WiFiTile;
 import com.android.systemui.quicksettings.WifiAPTile;
 import com.android.systemui.quicksettings.RebootTile;
-import com.android.systemui.quicksettings.GpsTile;
 import com.android.systemui.quicksettings.FastChargeTile;
 import com.android.systemui.quicksettings.AdblockerTile;
 import com.android.systemui.quicksettings.HaloTile;
+import com.android.systemui.quicksettings.PieTile;
 import com.android.systemui.quicksettings.ScreenshotTile;
 import com.android.systemui.quicksettings.AppcirclebarTile;
 import com.android.systemui.quicksettings.OnTheGoTile;
@@ -125,6 +129,8 @@ import com.android.systemui.quicksettings.ProfileTile;
 import com.android.systemui.quicksettings.NavBarTile;
 import com.android.systemui.quicksettings.HeadsupTile;
 import com.android.systemui.quicksettings.CameraTile;
+import com.android.systemui.quicksettings.CPUFreqTile;
+import com.android.systemui.quicksettings.DirtyTweaksTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -190,6 +196,7 @@ public class QuickSettingsController {
         boolean bluetoothSupported = DeviceUtils.deviceSupportsBluetooth();
         boolean mobileDataSupported = DeviceUtils.deviceSupportsMobileData(mContext);
         boolean torchSupported = DeviceUtils.deviceSupportsTorch(mContext);
+        boolean cpufreqSupported = DeviceUtils.deviceSupportsCPUFreq();
 
         if (!bluetoothSupported) {
             TILES_DEFAULT.remove(TILE_BLUETOOTH);
@@ -198,6 +205,7 @@ public class QuickSettingsController {
         if (!mobileDataSupported) {
             TILES_DEFAULT.remove(TILE_WIFIAP);
             TILES_DEFAULT.remove(TILE_MOBILEDATA);
+            TILES_DEFAULT.remove(TILE_NETWORKMODE);
         }
 
         if (!torchSupported) {
@@ -242,6 +250,9 @@ public class QuickSettingsController {
                 qs = new MobileNetworkTile(mContext, this, mStatusBarService.mNetworkController);
             } else if (tile.equals(TILE_LOCKSCREEN)) {
                 qs = new ToggleLockscreenTile(mContext, this);
+            } else if (tile.equals(TILE_NETWORKMODE) && mobileDataSupported) {
+                qs = new MobileNetworkTypeTile(mContext,
+                        this, mStatusBarService.mNetworkController);
             } else if (tile.equals(TILE_AUTOROTATE)) {
                 qs = new AutoRotateTile(mContext, this, mHandler);
             } else if (tile.equals(TILE_AIRPLANE)) {
@@ -269,14 +280,14 @@ public class QuickSettingsController {
             } else if (tile.equals(TILE_NETWORKADB)) {
                 mTileStatusUris.add(Settings.Global.getUriFor(Settings.Global.ADB_ENABLED));
                 qs = new NetworkAdbTile(mContext, this);
-            } else if (tile.equals(TILE_GPS)) {
-                qs = new GpsTile(mContext, this);
             } else if (tile.contains(TILE_FCHARGE)) {
                 qs = new FastChargeTile(mContext, this);
             } else if (tile.contains(TILE_ADBLOCKER)) {
                 qs = new AdblockerTile(mContext, this);
             } else if (tile.equals(TILE_HALO)) {
                 qs = new HaloTile(mContext, this);
+            } else if (tile.equals(TILE_PIE)) {
+                qs = new PieTile(mContext, this);
             } else if (tile.equals(TILE_SCREENSHOT)) {
                 qs = new ScreenshotTile(mContext, this, mHandler);
             } else if (tile.equals(TILE_APPCIRCLEBAR)) {
@@ -291,8 +302,14 @@ public class QuickSettingsController {
                 qs = new CompassTile(mContext, this);
             } else if (tile.equals(TILE_NAVBAR)) {
                 qs = new NavBarTile(mContext, this);
+            } else if (tile.equals(TILE_DIRTYTWEAKS)) {
+                qs = new DirtyTweaksTile(mContext, this);
             } else if (tile.equals(TILE_HEADSUP)) {
                 qs = new HeadsupTile(mContext, this);
+            } else if (tile.contains(TILE_CPUFREQ)) {
+                if (cpufreqSupported) {
+                    qs = new CPUFreqTile(mContext, this);
+                }
             } else if (tile.equals(TILE_CAMERA) && cameraSupported) {
                 qs = new CameraTile(mContext, this, mHandler);
             }

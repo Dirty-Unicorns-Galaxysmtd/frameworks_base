@@ -28,7 +28,7 @@ import android.content.pm.IPackageManager;
 import android.content.pm.PackageManager;
 import android.content.pm.ThemeUtils;
 import android.content.res.Configuration;
-import android.content.res.CustomTheme;
+import android.content.res.ThemeConfig;
 import android.database.ContentObserver;
 import android.media.AudioService;
 import android.net.wifi.p2p.WifiP2pService;
@@ -61,11 +61,13 @@ import com.android.server.am.BatteryStatsService;
 import com.android.server.content.ContentService;
 import com.android.server.display.DisplayManagerService;
 import com.android.server.dreams.DreamManagerService;
+import com.android.server.gesture.GestureService;
 import com.android.server.input.InputManagerService;
 import com.android.server.media.MediaRouterService;
 import com.android.server.net.NetworkPolicyManagerService;
 import com.android.server.net.NetworkStatsService;
 import com.android.server.os.SchedulingPolicyService;
+import com.android.server.gesture.EdgeGestureService;
 import com.android.server.pm.Installer;
 import com.android.server.pm.PackageManagerService;
 import com.android.server.pm.UserManagerService;
@@ -381,6 +383,8 @@ class ServerThread {
         PrintManagerService printManager = null;
         MediaRouterService mediaRouter = null;
         ThemeService themeService = null;
+        GestureService gestureService = null;
+        EdgeGestureService edgeGestureService = null;
 
         // Bring up services needed for UI.
         if (factoryTest != SystemServer.FACTORY_TEST_LOW_LEVEL) {
@@ -823,6 +827,17 @@ class ServerThread {
                 }
             }
 
+            if (context.getResources().getBoolean(
+                    com.android.internal.R.bool.config_enableGestureService)) {
+                try {
+                    Slog.i(TAG, "Gesture Sensor Service");
+                    gestureService = new GestureService(context, inputManager);
+                    ServiceManager.addService("gesture", gestureService);
+                } catch (Throwable e) {
+                    Slog.e(TAG, "Failure starting Gesture Sensor Service", e);
+                }
+            }
+
             try {
                 Slog.i(TAG, "IdleMaintenanceService");
                 new IdleMaintenanceService(context, battery);
@@ -853,6 +868,14 @@ class ServerThread {
                 } catch (Throwable e) {
                     reportWtf("starting MediaRouterService", e);
                 }
+            }
+
+            try {
+                Slog.i(TAG, "EdgeGesture service");
+                edgeGestureService = new EdgeGestureService(context, inputManager);
+                ServiceManager.addService("edgegestureservice", edgeGestureService);
+            } catch (Throwable e) {
+                Slog.e(TAG, "Failure starting EdgeGesture service", e);
             }
         }
 
@@ -945,6 +968,22 @@ class ServerThread {
             display.systemReady(safeMode, onlyCore);
         } catch (Throwable e) {
             reportWtf("making Display Manager Service ready", e);
+        }
+
+        if (gestureService != null) {
+            try {
+                gestureService.systemReady();
+            } catch (Throwable e) {
+                reportWtf("making Gesture Sensor Service ready", e);
+            }
+        }
+
+        if (edgeGestureService != null) {
+            try {
+                edgeGestureService.systemReady();
+            } catch (Throwable e) {
+                reportWtf("making EdgeGesture service ready", e);
+            }
         }
 
         IntentFilter filter = new IntentFilter();
@@ -1144,8 +1183,9 @@ class ServerThread {
                 try {
                     // now that the system is up, apply default theme if applicable
                     if (themeServiceF != null) themeServiceF.systemRunning();
-                    CustomTheme customTheme = CustomTheme.getBootTheme(contextF.getContentResolver());
-                    String iconPkg = customTheme.getIconPackPkgName();
+                    ThemeConfig themeConfig =
+                            ThemeConfig.getBootTheme(contextF.getContentResolver());
+                    String iconPkg = themeConfig.getIconPackPkgName();
                     pmf.updateIconMapping(iconPkg);
                 } catch (Throwable e) {
                     reportWtf("Icon Mapping failed", e);

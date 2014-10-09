@@ -24,6 +24,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.net.ConnectivityManager;
+import android.database.ContentObserver;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -39,6 +40,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -64,6 +66,9 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     static final boolean CHATTY = false; // additional diagnostics, but not logspew
 
     private static final int FLIGHT_MODE_ICON = R.drawable.stat_sys_signal_flightmode;
+
+    private static final String UPDATE_QUIET_HOURS_MODES =
+            "com.android.settings.slim.service.UPDATE_QUIET_HOURS_MODES";
 
     // telephony
     boolean mHspaDataDistinguishable;
@@ -140,8 +145,11 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     private Locale mLocale = null;
     private Locale mLastLocale = null;
 
+    private boolean mHideSignal;
+
     // our ui
     Context mContext;
+    ContentResolver mCr;
     ArrayList<ImageView> mPhoneSignalIconViews = new ArrayList<ImageView>();
     ArrayList<ImageView> mDataDirectionIconViews = new ArrayList<ImageView>();
     ArrayList<ImageView> mDataDirectionOverlayIconViews = new ArrayList<ImageView>();
@@ -156,6 +164,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     ArrayList<SignalCluster> mSignalClusters = new ArrayList<SignalCluster>();
     ArrayList<NetworkSignalChangedCallback> mSignalsChangedCallbacks =
             new ArrayList<NetworkSignalChangedCallback>();
+    ArrayList<CarrierCluster> mCarrierCluster = new ArrayList<CarrierCluster>();
     int mLastPhoneSignalIconId = -1;
     int mLastDataDirectionIconId = -1;
     int mLastDataDirectionOverlayIconId = -1;
@@ -163,14 +172,19 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     int mLastWimaxIconId = -1;
     int mLastCombinedSignalIconId = -1;
     int mLastDataTypeIconId = -1;
+    int mCarrierIconId = -1;
     String mLastCombinedLabel = "";
 
     private boolean mHasMobileDataFeature;
+    private boolean mUseSixBar;
+    private DirtyObserver mObserver = null;
 
     boolean mDataAndWifiStacked = false;
 
    // Whether the direction arrows are enabled by the user
    boolean mDirectionArrowsEnabled = false;
+
+    private UpdateUIListener mUpdateUIListener = null;
 
     public interface SignalCluster {
         void setWifiIndicators(boolean visible, int strengthIcon, int activityIcon,
@@ -178,6 +192,10 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         void setMobileDataIndicators(boolean visible, int strengthIcon, int activityIcon,
                 int typeIcon, String contentDescription, String typeContentDescription);
         void setIsAirplaneMode(boolean is, int airplaneIcon);
+    }
+
+    public interface CarrierCluster {
+        void setCarrierIndicators(int carrierIcon);
     }
 
     public interface NetworkSignalChangedCallback {
@@ -191,40 +209,13 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         void onAirplaneModeChanged(boolean enabled);
     }
 
-    private final class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_NETWORK_ACTIVITY),
-                    false, this, UserHandle.USER_ALL);
-            mDirectionArrowsEnabled = Settings.System.getIntForUser(resolver,
-                    Settings.System.STATUS_BAR_NETWORK_ACTIVITY,
-                    0, UserHandle.USER_CURRENT) == 0 ? false : true;
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            mDirectionArrowsEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.STATUS_BAR_NETWORK_ACTIVITY,
-                    0, UserHandle.USER_CURRENT) == 0 ? false : true;
-            refreshViews();
-        }
-    }
-
     /**
      * Construct this controller object and register for updates.
      */
     public NetworkController(Context context) {
         mContext = context;
+        mCr = context.getContentResolver();
         final Resources res = context.getResources();
-
-        // Register settings observer and set initial preferences
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        settingsObserver.observe();
 
         ConnectivityManager cm = (ConnectivityManager)mContext.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
@@ -249,9 +240,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                         | PhoneStateListener.LISTEN_DATA_ACTIVITY);
         mHspaDataDistinguishable = mContext.getResources().getBoolean(
                 R.bool.config_hspa_data_distinguishable);
-        mNetworkNameSeparator = mContext.getString(R.string.status_bar_network_name_separator);
-        mNetworkNameDefault = mContext.getString(
-                com.android.internal.R.string.lockscreen_carrier_default);
+        updateDefaultNetworkResources();
         mNetworkName = mNetworkNameDefault;
 
         // wifi
@@ -265,6 +254,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
 
         // broadcasts
         IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_CUSTOM_CARRIER_LABEL_CHANGED);
         filter.addAction("com.android.settings.LABEL_CHANGED");
         filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -287,7 +277,15 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         // AIRPLANE_MODE_CHANGED is sent at boot; we've probably already missed it
         updateAirplaneMode();
 
+        // 6-bar data icons
+        updateSixBar();
+        mObserver = new DirtyObserver(new Handler());
+        mObserver.observe();
+
         mLastLocale = mContext.getResources().getConfiguration().locale;
+
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
     }
 
     public boolean hasMobileDataFeature() {
@@ -345,6 +343,11 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         mEmergencyLabelViews.add(v);
     }
 
+    public void addCarrierCluster(CarrierCluster ccluster) {
+        mCarrierCluster.add(ccluster);
+        refreshCarrierCluster(ccluster);
+    }
+
     public void addSignalCluster(SignalCluster cluster) {
         mSignalClusters.add(cluster);
         refreshSignalCluster(cluster);
@@ -353,6 +356,11 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     public void addNetworkSignalChangedCallback(NetworkSignalChangedCallback cb) {
         mSignalsChangedCallbacks.add(cb);
         notifySignalsChangedCallbacks(cb);
+    }
+
+    public void refreshCarrierCluster(CarrierCluster ccluster) {
+        if (mDemoMode) return;
+        ccluster.setCarrierIndicators(mCarrierIconId);
     }
 
     public void refreshSignalCluster(SignalCluster cluster) {
@@ -445,6 +453,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             updateDataIcon();
             refreshViews();
         } else if (action.equals(TelephonyIntents.SPN_STRINGS_UPDATED_ACTION)) {
+            updateDefaultNetworkResources();
             updateNetworkName(intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_SPN, false),
                         intent.getStringExtra(TelephonyIntents.EXTRA_SPN),
                         intent.getBooleanExtra(TelephonyIntents.EXTRA_SHOW_PLMN, false),
@@ -455,6 +464,8 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             updateConnectivity(intent);
             refreshViews();
         } else if (action.equals("com.android.settings.LABEL_CHANGED")) {
+            refreshViews();
+        } else if (action.equals(Intent.ACTION_CUSTOM_CARRIER_LABEL_CHANGED)) {
             refreshViews();
         } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
             refreshLocale();
@@ -605,48 +616,75 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     }
 
     private final void updateTelephonySignalStrength() {
-        if (!hasService() &&
-                (mDataServiceState != ServiceState.STATE_IN_SERVICE)) {
-            if (DEBUG) Log.d(TAG, " No service");
-            mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
-            mQSPhoneSignalIconId = R.drawable.ic_qs_signal_no_signal;
-            mDataSignalIconId = R.drawable.stat_sys_signal_null;
-        } else {
-            if ((mSignalStrength == null) || (mServiceState == null)) {
-                if (DEBUG) {
-                    Log.d(TAG, " Null object, mSignalStrength= " + mSignalStrength
-                            + " mServiceState " + mServiceState);
-                }
-                mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
+        if (!hasService()) {
+            if (CHATTY) Log.d(TAG, "updateTelephonySignalStrength: !hasService()");
+            if (mUseSixBar) {
+                mPhoneSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null_6bar);
+                mQSPhoneSignalIconId = R.drawable.ic_qs_signal_no_signal_6bar;
+                mDataSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null_6bar);
+            } else {
+                mPhoneSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null);
                 mQSPhoneSignalIconId = R.drawable.ic_qs_signal_no_signal;
-                mDataSignalIconId = R.drawable.stat_sys_signal_null;
+                mDataSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null);
+            }
+        } else {
+            if (mSignalStrength == null) {
+                if (CHATTY) Log.d(TAG, "updateTelephonySignalStrength: mSignalStrength == null");
+                if (mUseSixBar) {
+                    mPhoneSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null_6bar);
+                    mQSPhoneSignalIconId = R.drawable.ic_qs_signal_no_signal_6bar;
+                    mDataSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null_6bar);
+                } else {
+                    mPhoneSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null);
+                    mQSPhoneSignalIconId = R.drawable.ic_qs_signal_no_signal;
+                    mDataSignalIconId = (mHideSignal ? 0 : R.drawable.stat_sys_signal_null);
+                }
+
                 mContentDescriptionPhoneSignal = mContext.getString(
                         AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0]);
+
             } else {
                 int iconLevel;
                 int[] iconList;
                 if (isCdma() && mAlwaysShowCdmaRssi) {
-                    mLastSignalLevel = iconLevel = mSignalStrength.getCdmaLevel();
+                    mLastSignalLevel = iconLevel = (mUseSixBar) ?
+                            mSignalStrength.getSixBarCdmaLevel() : mSignalStrength.getCdmaLevel();
                     if(DEBUG) Log.d(TAG, "mAlwaysShowCdmaRssi=" + mAlwaysShowCdmaRssi
                             + " set to cdmaLevel=" + mSignalStrength.getCdmaLevel()
                             + " instead of level=" + mSignalStrength.getLevel());
                 } else {
-                    mLastSignalLevel = iconLevel = mSignalStrength.getLevel();
+                    mLastSignalLevel = iconLevel = (mUseSixBar) ?
+                            mSignalStrength.getSixBarLevel() : mSignalStrength.getLevel();
                 }
 
-                // Though mPhone is a Manager, this call is not an IPC
-                if ((isCdma() && isCdmaEri()) || mPhone.isNetworkRoaming()) {
-                    iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH_ROAMING[mInetCondition];
+                if (mUseSixBar) {
+                    iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH_6BAR[mInetCondition];
+                    mDataSignalIconId = (mHideSignal ? 0 : TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH_6BAR[mInetCondition][iconLevel]);
+                    mQSPhoneSignalIconId =
+                            TelephonyIcons.QS_TELEPHONY_SIGNAL_STRENGTH_6BAR[mInetCondition][iconLevel];
                 } else {
-                    iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH[mInetCondition];
+                    if (isCdma()) {
+                        if (isCdmaEri()) {
+                            iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH_ROAMING[mInetCondition];
+                        } else {
+                            iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH[mInetCondition];
+                        }
+                    } else {
+                        // Though mPhone is a Manager, this call is not an IPC
+                        if (mPhone.isNetworkRoaming()) {
+                            iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH_ROAMING[mInetCondition];
+                        } else {
+                            iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH[mInetCondition];
+                        }
+                    }
+                    mDataSignalIconId = (mHideSignal ? 0 : TelephonyIcons.DATA_SIGNAL_STRENGTH[mInetCondition][iconLevel]);
+                    mQSPhoneSignalIconId =
+                            TelephonyIcons.QS_TELEPHONY_SIGNAL_STRENGTH[mInetCondition][iconLevel];
                 }
+                mPhoneSignalIconId = (mHideSignal ? 0 : iconList[iconLevel]);
 
-                mPhoneSignalIconId = iconList[iconLevel];
-                mQSPhoneSignalIconId =
-                        TelephonyIcons.QS_TELEPHONY_SIGNAL_STRENGTH[mInetCondition][iconLevel];
                 mContentDescriptionPhoneSignal = mContext.getString(
                         AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[iconLevel]);
-                mDataSignalIconId = TelephonyIcons.DATA_SIGNAL_STRENGTH[mInetCondition][iconLevel];
             }
         }
     }
@@ -887,6 +925,12 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         mDataConnected = visible;
     }
 
+    private void updateDefaultNetworkResources() {
+        mNetworkNameSeparator = mContext.getString(R.string.status_bar_network_name_separator);
+        mNetworkNameDefault = mContext.getString(
+                com.android.internal.R.string.lockscreen_carrier_default);
+    }
+
     void updateNetworkName(boolean showSpn, String spn, boolean showPlmn, String plmn) {
         if (false) {
             Log.d("CarrierLabel", "updateNetworkName showSpn=" + showSpn + " spn=" + spn
@@ -952,6 +996,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             mWifiConnected = networkInfo != null && networkInfo.isConnected();
             // If we just connected, grab the inintial signal strength and ssid
             if (mWifiConnected && !wasConnected) {
+                updateQuietHoursState();
                 // try getting it out of the intent first
                 WifiInfo info = (WifiInfo) intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
                 if (info == null) {
@@ -963,6 +1008,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                     mWifiSsid = null;
                 }
             } else if (!mWifiConnected) {
+                updateQuietHoursState();
                 mWifiSsid = null;
             }
         } else if (action.equals(WifiManager.RSSI_CHANGED_ACTION)) {
@@ -972,6 +1018,28 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         }
 
         updateWifiIcons();
+    }
+
+    private void updateQuietHoursState() {
+        final int quietHoursWiFi = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_REQUIRE_WIFI, 0);
+        if (quietHoursWiFi == 1 && mWifiConnected) {
+            // We just updated and need to inform quiet hours that we're connected
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.QUIET_HOURS_REQUIRE_WIFI, 2);
+            sendUpdateIntent();
+        } else if (quietHoursWiFi == 2 && !mWifiConnected) {
+            // We just updated and need to inform quiet hours that we're not connected
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.QUIET_HOURS_REQUIRE_WIFI, 1);
+            sendUpdateIntent();
+        }
+    }
+
+    private void sendUpdateIntent() {
+        Intent intent = new Intent();
+        intent.setAction(UPDATE_QUIET_HOURS_MODES);
+        mContext.sendBroadcast(intent);
     }
 
     private void updateWifiIcons() {
@@ -992,7 +1060,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         }
     }
 
-    private String huntForSsid(WifiInfo info) {
+    String huntForSsid(WifiInfo info) { // PIE
         String ssid = info.getSSID();
         if (ssid != null) {
             return ssid;
@@ -1106,15 +1174,18 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         String combinedLabel = "";
         String wifiLabel = "";
         String mobileLabel = "";
+        String carrierNumber = "";
+        String carrierName = "";
         int N;
         final boolean emergencyOnly = isEmergencyOnly();
-        final String customLabel = Settings.System.getString(mContext.getContentResolver(),
-                Settings.System.CUSTOM_CARRIER_LABEL);
+
+        final String customCarrierLabel = Settings.System.getStringForUser(mContext.getContentResolver(),
+                Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
 
         if (!mHasMobileDataFeature) {
             mDataSignalIconId = mPhoneSignalIconId = 0;
             mQSPhoneSignalIconId = 0;
-            mobileLabel = "";
+            mobileLabel = carrierName = carrierNumber = "";
         } else {
             // We want to show the carrier name if in service and either:
             //   - We are connected to mobile data, or
@@ -1125,18 +1196,22 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             // Otherwise (nothing connected) we show "No internet connection".
 
             if (mDataConnected) {
-                mobileLabel = mNetworkName;
+                mobileLabel = carrierName = mNetworkName;
+                carrierNumber = mPhone.getNetworkOperator();
             } else if (mConnected || emergencyOnly) {
                 if (hasService() || emergencyOnly) {
                     // The isEmergencyOnly test covers the case of a phone with no SIM
-                    mobileLabel = mNetworkName;
+                    mobileLabel = carrierName = mNetworkName;
+                    carrierNumber = mPhone.getNetworkOperator();
                 } else {
                     // Tablets, basically
-                    mobileLabel = "";
+                    mobileLabel = carrierName = carrierNumber = "";
                 }
             } else {
                 mobileLabel
                     = context.getString(R.string.status_bar_settings_signal_meter_disconnected);
+                carrierName = mNetworkName;
+                carrierNumber = mPhone.getNetworkOperator();
             }
 
             // Now for things that should only be shown when actually using mobile data.
@@ -1273,9 +1348,9 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             }
         }
 
-        if (customLabel != null && customLabel.length() > 0) {
-            combinedLabel = customLabel;
-            mobileLabel = customLabel;
+        if (!TextUtils.isEmpty(customCarrierLabel)) {
+            combinedLabel = customCarrierLabel;
+            mobileLabel = customCarrierLabel;
         }
 
         // Cleanup the double quotes
@@ -1313,6 +1388,25 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         // update QS
         for (NetworkSignalChangedCallback cb : mSignalsChangedCallbacks) {
             notifySignalsChangedCallbacks(cb);
+        }
+
+        if (!TextUtils.isEmpty(carrierNumber)) {
+            mCarrierIconId = context.getResources().getIdentifier("l" + carrierNumber,
+                                      "drawable", context.getPackageName());
+        }
+
+        if (mCarrierIconId <= 0) {
+            if (!TextUtils.isEmpty(carrierName)) {
+                carrierName = filterNetworkName(carrierName);
+                mCarrierIconId = context.getResources().getIdentifier("l" + carrierName,
+                                         "drawable", context.getPackageName());
+            }
+        }
+
+        if (mCarrierIconId > 0) {
+            for (CarrierCluster ccluster : mCarrierCluster) {
+                 refreshCarrierCluster(ccluster);
+            }
         }
 
         if (mLastPhoneSignalIconId          != mPhoneSignalIconId
@@ -1491,6 +1585,28 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                 v.setVisibility(View.VISIBLE);
             }
         }
+
+        if (mUpdateUIListener != null) {
+            mUpdateUIListener.onUpdateUI();
+        }
+    }
+
+    private String filterNetworkName(String string) {
+        boolean bl = true;
+        String string2 = string.replace((" "), (""))
+                        .replace(("."), ("_")).replace(("&"), ("_"))
+                        .replace(("-"), ("")).replace(("*"), (""))
+                        .replace(("@"), (""));
+        boolean bl2 = (string2.length() > 3) ? bl : false;
+        if (string2.length() != 3) {
+            bl = false;
+        }
+        if (!bl2 && bl) return string2.toLowerCase();
+        String string3 = (string2.length() > 3)
+                         ? (string2.substring(0, 4))
+                         : (string2.substring(0, 3));
+        string2 = string3.toLowerCase();
+        return string2.toLowerCase();
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
@@ -1722,4 +1838,68 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             }
         }
     }
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_NETWORK_ACTIVITY),
+                    false, this, UserHandle.USER_ALL);
+            mDirectionArrowsEnabled = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_NETWORK_ACTIVITY,
+                    0, UserHandle.USER_CURRENT) == 0 ? false : true;
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_HIDE_SIGNAL_BARS), false,
+                    this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    protected void updateSettings() {
+        mHideSignal = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_HIDE_SIGNAL_BARS, 0) == 1);
+        updateTelephonySignalStrength();
+        updateDataNetType();
+    }
+
+    public static interface UpdateUIListener {
+        void onUpdateUI();
+    }
+
+    public void setListener(UpdateUIListener listener) {
+        mUpdateUIListener = listener;
+    }
+
+    private class DirtyObserver extends ContentObserver {
+        public DirtyObserver(Handler handler) {
+            super(handler);
+        }
+
+        public void observe() {
+            mCr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_6BAR_SIGNAL), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSixBar();
+            updateTelephonySignalStrength();
+            refreshViews();
+        }
+    }
+
+    private void updateSixBar() {
+        boolean sixBarEnabled = (Settings.System.getInt(mCr,
+            Settings.System.STATUSBAR_6BAR_SIGNAL, 0) == 1);
+        mUseSixBar = sixBarEnabled;
+    }
+
 }

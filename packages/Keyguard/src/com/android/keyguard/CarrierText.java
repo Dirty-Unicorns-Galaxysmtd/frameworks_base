@@ -17,6 +17,8 @@
 package com.android.keyguard;
 
 import android.content.Context;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.text.method.SingleLineTransformationMethod;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -87,12 +89,20 @@ public class CarrierText extends TextView {
     }
 
     protected void updateCarrierText(State simState, CharSequence plmn, CharSequence spn) {
-        String customLabel = Settings.System.getString(getContext().getContentResolver(),
-                Settings.System.CUSTOM_CARRIER_LABEL);
-        if (customLabel == null || customLabel.length() == 0) {
-            setText(getCarrierTextForSimState(simState, plmn, spn));
+        String customCarrierLabel = Settings.System.getStringForUser(getContext().getContentResolver(),
+            Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
+
+        int noCarrierLabel = Settings.System.getIntForUser(getContext().getContentResolver(),
+            Settings.System.NO_CARRIER_LABEL, 0, UserHandle.USER_CURRENT);
+
+        if (noCarrierLabel == 0) {
+            if (!TextUtils.isEmpty(customCarrierLabel)) {
+                setText(customCarrierLabel);
+            } else {
+                setText(getCarrierTextForSimState(simState, plmn, spn));
+            }
         } else {
-            setText(customLabel);
+            setText("");
         }
     }
 
