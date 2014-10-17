@@ -559,4 +559,9 @@
     <!-- On-The-Go Mode -->
     <string name="quick_settings_onthego_back">Rear Camera</string>
     <string name="quick_settings_onthego_front">Front Camera</string>
+
+    <!-- Dynamic Colors Tile -->
+    <string name="quick_settings_dynamiccolor_screencolor_label">Screen Color</string>
+    <string name="quick_settings_dynamiccolor_actionbar_label">Action Bar</string>
+    <string name="quick_settings_dynamiccolor_off_label">Off</string>
 </resources>
