@@ -4942,6 +4942,10 @@ public class WindowManagerService extends IWindowManager.Stub
                     displayContent.moveHomeStackBox(isHomeStackTask);
                 }
                 stack.moveTaskToTop(task);
+                if (mAppTransition.isTransitionSet()) {
+                    task.setSendingToBottom(false);
+                }
+                moveStackWindowsLocked(stack.getDisplayContent());
             }
         } finally {
             Binder.restoreCallingIdentity(origId);
@@ -4960,6 +4964,9 @@ public class WindowManagerService extends IWindowManager.Stub
                 }
                 final TaskStack stack = task.mStack;
                 stack.moveTaskToBottom(task);
+                if (mAppTransition.isTransitionSet()) {
+                    task.setSendingToBottom(true);
+                }
                 moveStackWindowsLocked(stack.getDisplayContent());
             }
         } finally {
@@ -5665,8 +5672,8 @@ public class WindowManagerService extends IWindowManager.Stub
      * of the target image.
      *
      * @param displayId the Display to take a screenshot of.
-     * @param width the width of the target bitmap
-     * @param height the height of the target bitmap
+     * @param width the width of the target bitmap or -1 for a full screenshot
+     * @param height the height of the target bitmap or -1 for a full screenshot
      * @param force565 if true the returned bitmap will be RGB_565, otherwise it
      *                 will be the same config as the surface
      */
@@ -5822,6 +5829,12 @@ public class WindowManagerService extends IWindowManager.Stub
 
                 int fw = frame.width();
                 int fh = frame.height();
+
+                // use the whole frame if width and height are not constrained
+                if (width == -1 && height == -1) {
+                    width = frame.width();
+                    height = frame.height();
+                }
 
                 // Constrain thumbnail to smaller of screen width or height. Assumes aspect
                 // of thumbnail is the same as the screen (in landscape) or square.

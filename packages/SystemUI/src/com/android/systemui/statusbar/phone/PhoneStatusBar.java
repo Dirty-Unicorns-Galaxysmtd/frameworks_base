@@ -92,6 +92,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
 import android.view.animation.AccelerateInterpolator;
@@ -331,6 +332,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private Ticker mTicker;
     private View mTickerView;
     private boolean mTicking;
+    private boolean mTickerDisabled;
 
     // Tracking finger for opening/closing.
     int mEdgeBorder; // corresponds to R.dimen.status_bar_edge_ignore
@@ -530,6 +532,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_CARRIER), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.TOGGLE_CARRIER_LOGO), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.TICKER_DISABLED), false, this);
             update();
         }
 
@@ -628,6 +632,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mShowStatusBarCarrier = Settings.System.getInt(
                 resolver, Settings.System.STATUS_BAR_CARRIER, 0) == 1;
             showStatusBarCarrierLabel(mShowStatusBarCarrier);
+
+            mTickerDisabled = Settings.System.getInt(
+                resolver, Settings.System.TICKER_DISABLED, 0) == 1;
 
             updateBatteryIcons();
             updateCustomHeaderStatus();
@@ -1049,11 +1056,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     View.STATUS_BAR_DISABLE_CLOCK);
         }
 
+        mTickerDisabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TICKER_DISABLED, 0) == 1;
         mTicker = new MyTicker(context, mStatusBarView);
         mTicker.setStatusBar(this);
         TickerView tickerView = (TickerView)mStatusBarView.findViewById(R.id.tickerText);
         tickerView.mTicker = mTicker;
-        if (mHaloActive) mTickerView.setVisibility(View.GONE);
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
@@ -2386,8 +2394,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mHaloButtonAnim != null) mHaloButtonAnim.cancel();
         if (mNotificationButtonAnim != null) mNotificationButtonAnim.cancel();
         if (mClearButtonAnim != null) mClearButtonAnim.cancel();
-        if (mLockButtonAnim != null) mLockButtonAnim.cancel();
-        if (mAddButtonAnim != null) mAddButtonAnim.cancel();
 
         final boolean halfWayDone = mScrollView.getVisibility() == View.VISIBLE;
         final int zeroOutDelays = halfWayDone ? 0 : 1;
@@ -2425,16 +2431,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 ObjectAnimator.ofFloat(mNotificationButton, View.ALPHA, 0f)
                     .setDuration(FLIP_DURATION),
                 mNotificationButton, View.INVISIBLE));
-        mLockButtonAnim = start(
-            setVisibilityWhenDone(
-                ObjectAnimator.ofFloat(mLockButton, View.ALPHA, 1f)
-                    .setDuration(FLIP_DURATION),
-                mLockButton, View.INVISIBLE));
-        mAddButtonAnim = start(
-            setVisibilityWhenDone(
-                ObjectAnimator.ofFloat(mAddButton, View.ALPHA, 1f)
-                    .setDuration(FLIP_DURATION),
-                mAddButton, View.INVISIBLE));
         mSettingsButton.setVisibility(View.VISIBLE);
         mSettingsButtonAnim = start(
             ObjectAnimator.ofFloat(mSettingsButton, View.ALPHA, 1f)
@@ -3188,6 +3184,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         // not for you
         if (!notificationIsForCurrentUser(n)) return;
+
+        // bitches be crazy
+        if (mTickerDisabled) return;
 
         // Show the ticker if one is requested. Also don't do this
         // until status bar window is attached to the window manager,
@@ -4019,6 +4018,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         copyNotifications(notifications, mNotificationData);
         mNotificationData.clear();
 
+        // Halts the old ticker. A new ticker is created in makeStatusBarView() so
+        // this MUST happen before makeStatusBarView();
+        mTicker.halt();
+
         makeStatusBarView();
 
         /**
@@ -4056,7 +4059,19 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         checkBarModes();
-        mRecreating = false;
+
+        // Stop the command queue until the new status bar container settles and has a layout pass
+        mCommandQueue.pause();
+        mStatusBarContainer.requestLayout();
+        mStatusBarContainer.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mStatusBarContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mCommandQueue.resume();
+                mRecreating = false;
+            }
+        });
     }
 
     private void removeAllViews(ViewGroup parent) {

@@ -3108,6 +3108,12 @@ public final class Settings {
         public static final String POINTER_SPEED = "pointer_speed";
 
         /**
+         * Enable/Disable screenshot sound
+         * @hide
+         */
+        public static final String SCREENSHOT_SOUND = "screenshot_sound";
+
+        /**
          * Screenshot toggle delay
          * @hide
          */
@@ -5004,6 +5010,12 @@ public final class Settings {
         public static final String DOUBLE_TAP_SLEEP_GLOWPAD = "double_tap_sleep_glowpad";
 
         /**
+         *  Enable navigation bar double tap gesture on to put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
+
+        /**
          * Whether recent panel gravity is left or right (default = Gravity.RIGHT).
          * @hide
          */
@@ -5189,6 +5201,12 @@ public final class Settings {
         public static final String PIE_LAST_APP = "pie_last_app";
 
         /**
+         * Navigation glow time
+         * @hide
+         */
+        public static final String NAVIGATION_BUTTON_GLOW_TIME = "navigation_button_glow_time";
+
+        /**
          * Pie kill task, default to 0 (off)
          * @hide
          */
@@ -5251,6 +5269,13 @@ public final class Settings {
          * @hide
          */
         public static final String WIFI_NETWORK_NOTIFICATIONS = "network_notifications";
+
+        /**
+         * Disable the statusbar ticker
+         * Default is enabled
+         * @hide
+         */
+        public static final String TICKER_DISABLED = "ticker_disabled";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
